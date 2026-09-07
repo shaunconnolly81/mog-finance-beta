@@ -746,7 +746,16 @@ function initGoogle(){
   try{await loadCloudState();}catch(e){console.error(e);alert("Google Drive connected, but the finance data could not be loaded: "+e.message)}
  }});
 }
-function connectGoogle(){initGoogle();if(!tokenClient){alert("Google sign-in is still loading. Try again in a moment.");return;}tokenClient.requestAccessToken({prompt:accessToken?"":"consent"});}
+function connectGoogle(){
+ initGoogle();
+ if(!tokenClient){
+  alert("Google sign-in is still loading. Try again in a moment.");
+  return;
+ }
+ // Do not force Google's consent screen on every launch.
+ // Google will still ask when consent is genuinely required.
+ tokenClient.requestAccessToken({prompt:""});
+}
 function disconnectGoogle(){
  if(accessToken&&window.google?.accounts?.oauth2?.revoke)google.accounts.oauth2.revoke(accessToken,()=>{});
  accessToken="";tokenExpiresAt=0;driveFileId="";cloudBaselineModifiedTime="";cloudConflict=false;cloudBusy=false;updateCloudUI();

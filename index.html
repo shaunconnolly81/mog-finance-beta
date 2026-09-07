@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<title>MOG Finance Online Beta</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --navy:#102a43;--navy2:#173f5f;--blue:#2364aa;--sky:#eaf3fb;--bg:#f4f7fa;
+  --card:#fff;--text:#172b4d;--muted:#66788a;--border:#dfe7ee;--green:#13795b;
+  --greenbg:#e8f7f0;--amber:#9a6700;--amberbg:#fff4ce;--red:#b42318;--redbg:#fff0ee;
+  --shadow:0 4px 18px rgba(16,42,67,.08);--radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:250px;background:linear-gradient(180deg,var(--navy),#0a2238);color:#fff;padding:22px 16px;position:fixed;top:0;bottom:0;left:0;overflow:auto;z-index:20}
+.brand{padding:4px 10px 20px}
+.brand h1{font-size:22px;margin:0 0 4px}.brand small{color:#b8ccdc}
+.navbtn{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:#cfe0ed;border-radius:10px;padding:11px 12px;margin:3px 0;text-align:left}
+.navbtn:hover,.navbtn.active{background:rgba(255,255,255,.12);color:#fff}
+.navbtn .icon{width:22px;text-align:center}
+.sidebar-footer{margin-top:26px;border-top:1px solid rgba(255,255,255,.12);padding:16px 10px 0;font-size:12px;color:#b8ccdc}
+.main{margin-left:250px;width:calc(100% - 250px);min-height:100vh}
+.topbar{height:68px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10}
+.topbar h2{font-size:20px;margin:0}.top-actions{display:flex;align-items:center;gap:10px}
+.status-pill{font-size:12px;padding:7px 10px;border-radius:999px;background:var(--greenbg);color:var(--green);font-weight:700}
+.content{padding:26px;max-width:1500px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+.page-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}
+.page-head h2{margin:0 0 6px;font-size:25px}.page-head p{margin:0;color:var(--muted)}
+.grid{display:grid;gap:16px}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.metric .label{font-size:13px;color:var(--muted);margin-bottom:8px}.metric .value{font-size:25px;font-weight:750;letter-spacing:-.02em}.metric .sub{font-size:12px;color:var(--muted);margin-top:6px}
+.metric.highlight{background:linear-gradient(135deg,#e7f7f0,#fff);border-color:#a9dec8}.metric.highlight .value{color:var(--green);font-size:30px}
+.metric.warn{background:var(--amberbg);border-color:#ecd28c}.metric.danger{background:var(--redbg);border-color:#f1b8b2}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:28px 0 12px}.section-title h3{margin:0;font-size:17px}.section-title small{color:var(--muted)}
+.breakdown{display:grid;grid-template-columns:1fr auto;gap:9px 18px;font-size:14px}.breakdown .k{color:var(--muted)}.breakdown .v{font-weight:650;text-align:right}.breakdown .total{padding-top:10px;border-top:1px solid var(--border);font-weight:750;color:var(--text)}
+.btn{border:1px solid var(--border);background:#fff;color:var(--text);border-radius:9px;padding:9px 13px;font-weight:650}
+.btn:hover{background:#f7fafc}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{filter:brightness(.96)}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}.btn.danger{color:var(--red);border-color:#efc0bc}.btn.small{padding:6px 9px;font-size:12px}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted);font-weight:650}.field input,.field select,.field textarea{border:1px solid #cfdbe5;border-radius:9px;padding:10px 11px;background:#fff;color:var(--text);width:100%}.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid #b7d7f2;border-color:var(--blue)}
+.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.form-grid .span2{grid-column:span 2}.form-grid .span4{grid-column:span 4}
+.table-wrap{overflow:auto;border:1px solid var(--border);border-radius:12px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;color:#466176;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}th,td{padding:10px 11px;border-bottom:1px solid #edf1f4;vertical-align:middle}tr:last-child td{border-bottom:0}td.num{text-align:right;font-variant-numeric:tabular-nums}td input,td select{width:100%;min-width:90px;border:1px solid transparent;background:transparent;padding:6px;border-radius:6px}td input:hover,td input:focus,td select:hover,td select:focus{border-color:#cdd9e3;background:#fff;outline:none}
+.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700}.badge.good{background:var(--greenbg);color:var(--green)}.badge.warn{background:var(--amberbg);color:var(--amber)}.badge.bad{background:var(--redbg);color:var(--red)}.badge.neutral{background:#eef2f5;color:#546575}
+.notice{border-radius:10px;padding:12px 14px;font-size:13px;background:var(--sky);border:1px solid #cfe2f3;color:#31566f}.notice.warn{background:var(--amberbg);border-color:#ecd28c;color:#725000}.notice.bad{background:var(--redbg);border-color:#efc0bc;color:#8d241b}
+.proposal{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:end}.proposal-result{border-radius:12px;padding:14px;background:#f6f9fb}.proposal-result.good{background:var(--greenbg);color:var(--green)}.proposal-result.bad{background:var(--redbg);color:var(--red)}
+.compare-table td:first-child{color:var(--muted)}.compare-table td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}.compare-win{background:var(--greenbg);font-weight:750}
+.settings-group{margin-bottom:20px}.settings-group h3{margin:0 0 12px;font-size:16px}.settings-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.big-number{font-size:34px;font-weight:800;letter-spacing:-.03em}.muted{color:var(--muted)}.small{font-size:12px}
+.hr{height:1px;background:var(--border);margin:18px 0}
+.right{text-align:right}.hidden{display:none!important}
+.modal{position:fixed;inset:0;background:rgba(10,34,56,.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}.modal-card{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25);max-width:850px;width:100%;max-height:90vh;overflow:auto;padding:22px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal-head h3{margin:0}.x{border:0;background:transparent;font-size:22px;color:var(--muted)}
+.mobile-menu{display:none;border:0;background:transparent;font-size:22px}
+.source-link{color:var(--blue);text-decoration:none}.source-link:hover{text-decoration:underline}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}.settings-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){
+ .sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}.main{margin-left:0;width:100%}.mobile-menu{display:block}.topbar{padding:0 14px}.content{padding:16px}.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.form-grid,.settings-grid{grid-template-columns:1fr}.form-grid .span2,.form-grid .span4{grid-column:span 1}.proposal{grid-template-columns:1fr}.page-head{flex-direction:column}
+}
+@media print{.sidebar,.topbar,.btn,.toolbar{display:none!important}.main{margin:0;width:100%}.page{display:none}.page.active{display:block}.content{padding:0}.card{box-shadow:none;break-inside:avoid}}
+
+.cloud-pill{font-size:12px;padding:7px 10px;border-radius:999px;background:#eef2f5;color:#546575;font-weight:700;white-space:nowrap}
+.cloud-pill.good{background:var(--greenbg);color:var(--green)}
+.cloud-pill.warn{background:var(--amberbg);color:var(--amber)}
+.cloud-pill.bad{background:var(--redbg);color:var(--red)}
+.sync-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.sync-detail{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><h1>MOG Finance</h1><small>Consulting & Exploration Pte. Ltd.</small></div>
+  <nav>
+    <button class="navbtn active" data-page="dashboard"><span class="icon">▦</span>Dashboard</button>
+    <button class="navbtn" data-page="monthly"><span class="icon">▤</span>Monthly Operations</button>
+    <button class="navbtn" data-page="accountant"><span class="icon">▥</span>Sleek Accounts</button>
+    <button class="navbtn" data-page="dividends"><span class="icon">◈</span>Dividends</button>
+    <button class="navbtn" data-page="compare"><span class="icon">⇄</span>NES vs MOG</button>
+    <button class="navbtn" data-page="settings"><span class="icon">⚙</span>Settings</button>
+    <button class="navbtn" data-page="backup"><span class="icon">⇩</span>Backup & Data</button>
+  </nav>
+  <div class="sidebar-footer">Online Beta<br>Private data syncs to your Google Drive app-data folder.<br><br><span id="saveStatus">Local cache ready</span></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" id="mobileMenu">☰</button><h2 id="topTitle">Dashboard</h2></div>
+  <div class="top-actions"><span class="cloud-pill" id="cloudPill">Drive not connected</span><button class="btn small" id="googleSignInBtn">Connect Google Drive</button><span class="status-pill" id="monthPill">No month</span><button class="btn small" onclick="window.print()">Print</button></div>
+</header>
+<div class="content">
+
+<section class="page active" id="page-dashboard">
+  <div class="page-head"><div><h2>Finance Dashboard</h2><p>Tax reserves, cash position and safe dividend capacity.</p></div><div class="toolbar"><select id="dashboardMonth" class="btn"></select></div></div>
+  <div class="grid grid-4" id="dashboardTop"></div>
+
+  <div class="section-title"><h3>Dividend decision</h3><small>Lower of distributable-profit capacity and cash capacity</small></div>
+  <div class="grid grid-3">
+    <div class="card metric highlight"><div class="label">SAFE DIVIDEND BEFORE CURRENT REQUEST</div><div class="value" id="safeDividend">—</div><div class="sub" id="safeDividendSub"></div></div>
+    <div class="card metric"><div class="label">CURRENT DIVIDEND REQUEST</div><div class="value" id="potentialDividend">—</div><div class="sub">Requested 07-Sep-2026; pending corpsec voucher and cash payment.</div></div>
+    <div class="card metric"><div class="label">REMAINING SAFE CAPACITY AFTER REQUEST</div><div class="value" id="minCashRetain">—</div><div class="sub">Additional headroom remaining after reserving the current US$22,000 request.</div></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-top:16px">
+    <div class="card">
+      <h3 style="margin-top:0">Why this dividend is safe</h3>
+      <div class="breakdown" id="dividendBreakdown"></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Try a proposed dividend</h3>
+      <div class="proposal">
+        <div class="field"><label>Additional proposed dividend (USD)</label><input id="proposedDividend" type="number" min="0" step="1000"></div>
+        <div class="proposal-result" id="proposalCash"><div class="small">Post-dividend cash</div><div class="big-number" id="postDividendCash">—</div></div>
+        <div class="proposal-result" id="proposalStatus"><div class="small">Status</div><div style="font-size:22px;font-weight:800" id="proposalStatusText">—</div><div class="small" id="proposalHeadroom"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title"><h3>Personal tax — 2026 income / YA 2027</h3><small>Planning estimate before personal reliefs unless entered in Settings</small></div>
+  <div class="grid grid-4" id="personalCards"></div>
+
+  <div class="section-title"><h3>Company tax — FY Mar 2026 to Feb 2027</h3><small>Actual tax estimate shown separately; cash reserve rule keeps 15% of company profit</small></div>
+  <div class="grid grid-4" id="companyTaxCards"></div>
+
+  <div class="section-title"><h3>Reconciliation checks</h3></div>
+  <div id="reconciliation"></div>
+</section>
+
+<section class="page" id="page-monthly">
+  <div class="page-head"><div><h2>Monthly Operations</h2><p>Work days, contract revenue and salary. Recorded revenue overrides the expected formula.</p></div><button class="btn primary" id="addMonthBtn">+ Add month</button></div>
+  <div class="table-wrap"><table><thead><tr>
+    <th>Period</th><th>Days</th><th>Rate USD</th><th>Service USD</th><th>Expected Revenue</th><th>Recorded Revenue</th><th>Revenue Used</th><th>Salary S$</th><th>Salary USD</th><th>Other Opex Forecast</th><th>Notes</th><th></th>
+  </tr></thead><tbody id="monthlyBody"></tbody></table></div>
+</section>
+
+<section class="page" id="page-accountant">
+  <div class="page-head"><div><h2>Sleek Management Accounts</h2><p>One cumulative month-end snapshot. Import the monthly Sleek .xlsx or enter the figures manually.</p></div>
+    <div class="toolbar"><label class="btn primary" for="xlsxInput">Import Sleek .xlsx</label><input id="xlsxInput" class="hidden" type="file" accept=".xlsx"><button class="btn" id="newActualBtn">+ Manual snapshot</button></div>
+  </div>
+  <div class="notice" style="margin-bottom:14px">The XLSX importer reads the <b>Profit and Loss</b> and <b>Balance Sheet</b> sheets locally in your browser. The workbook itself is not uploaded; only the resulting finance data is saved to your private Google Drive app-data file when sync is connected.</div>
+  <div class="table-wrap"><table><thead><tr>
+    <th>Month end</th><th>Sales YTD</th><th>Expense YTD</th><th>Wages YTD</th><th>Profit YTD</th><th>Cash</th><th>A/R</th><th>A/P</th><th>Dividends YTD</th><th>Tax adj.</th><th>Source</th><th></th>
+  </tr></thead><tbody id="actualsBody"></tbody></table></div>
+</section>
+
+<section class="page" id="page-dividends">
+  <div class="page-head"><div><h2>Dividend Register</h2><p>Document declarations and cash payments, including withdrawals later reclassified as dividends.</p></div><button class="btn primary" id="newDividendBtn">+ Add dividend</button></div>
+  <div class="grid grid-3" style="margin-bottom:16px">
+    <div class="card metric"><div class="label">Declared dividends through selected month</div><div class="value" id="registeredDivs">—</div></div>
+    <div class="card metric"><div class="label">Accountant dividends YTD</div><div class="value" id="accountantDivs">—</div></div>
+    <div class="card metric" id="divReconCard"><div class="label">Reconciliation difference</div><div class="value" id="divRecon">—</div></div>
+  </div>
+  <div class="table-wrap"><table><thead><tr>
+    <th>Period</th><th>Declaration</th><th>Cash date</th><th>USD</th><th>FX</th><th>S$ equivalent</th><th>Status</th><th>Documentation</th><th>Sleek ref.</th><th>Handling / Notes</th><th></th>
+  </tr></thead><tbody id="dividendBody"></tbody></table></div>
+</section>
+
+<section class="page" id="page-compare">
+  <div class="page-head"><div><h2>NES vs MOG</h2><p>The original business-case comparison: old employee package versus operating through MOG.</p></div></div>
+  <div class="grid grid-3" id="compareCards"></div>
+  <div class="section-title"><h3>Annual scenario</h3><small>Change assumptions in Settings</small></div>
+  <div class="table-wrap"><table class="compare-table"><thead><tr><th>Metric</th><th>NES Employee</th><th>MOG Company</th></tr></thead><tbody id="compareBody"></tbody></table></div>
+</section>
+
+<section class="page" id="page-settings">
+  <div class="page-head"><div><h2>Settings</h2><p>All assumptions are editable. Changes recalculate the entire app immediately.</p></div><button class="btn green" id="saveSettingsBtn">Save settings</button></div>
+  <div class="card">
+    <div class="settings-group"><h3>Current contract & currency</h3><div class="settings-grid" id="settingsContract"></div></div>
+    <div class="settings-group"><h3>Tax & reserves</h3><div class="settings-grid" id="settingsTax"></div></div>
+    <div class="settings-group"><h3>NES comparison</h3><div class="settings-grid" id="settingsNES"></div></div>
+    <div class="settings-group"><h3>Tax references</h3>
+      <div class="notice">Individual tax rates: <a class="source-link" target="_blank" href="https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-residency-and-tax-rates/individual-income-tax-rates">IRAS resident individual rates</a><br>
+      Corporate tax / exemptions: <a class="source-link" target="_blank" href="https://www.iras.gov.sg/taxes/corporate-income-tax/basics-of-corporate-income-tax/corporate-income-tax-rate-rebates-and-tax-exemption-schemes">IRAS corporate tax and exemption schemes</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="page-backup">
+  <div class="page-head"><div><h2>Backup & Data</h2><p>Google Drive is the master copy. This browser also keeps a local cache for resilience.</p></div></div>
+  <div class="grid grid-2">
+    <div class="card"><h3 style="margin-top:0">Google Drive sync</h3><p class="muted">The finance data file is stored privately in Google Drive's hidden app-data area. It is not stored in this public GitHub repository.</p><div id="cloudDetails" class="notice">Not connected.</div><div class="sync-row"><button class="btn primary" id="cloudConnectBtn">Connect Google Drive</button><button class="btn" id="cloudSaveNowBtn">Save now</button><button class="btn" id="cloudReloadBtn">Reload cloud copy</button><button class="btn danger" id="googleSignOutBtn">Disconnect</button></div><div class="sync-detail">Use the same Google account on Mac and phone. If another device changes the cloud copy while this device has unsaved edits, the app stops before overwriting it.</div></div>
+    <div class="card"><h3 style="margin-top:0">Backup / migration</h3><p class="muted">To move your current V3.1 data online, export a JSON backup from the old app, then import it here after connecting Google Drive.</p><div class="toolbar"><button class="btn primary" id="exportBackupBtn">Download backup</button><label class="btn" for="importBackupInput">Import backup</label><input id="importBackupInput" class="hidden" type="file" accept=".json"></div></div>
+    <div class="card"><h3 style="margin-top:0">Exports</h3><p class="muted">Export a simple CSV summary for your records or accountant.</p><button class="btn" id="exportSummaryBtn">Download summary CSV</button></div>
+    <div class="card"><h3 style="margin-top:0">Local cache</h3><div id="storageInfo" class="notice"></div><div class="hr"></div><p class="muted">Reset only this browser's working data. If connected, the blank state will also sync to Drive after confirmation.</p><button class="btn danger" id="resetBtn">Reset to blank app</button></div>
+  </div>
+</section>
+
+</div>
+</main>
+</div>
+
+<div class="modal hidden" id="actualModal"><div class="modal-card"><div class="modal-head"><h3 id="actualModalTitle">Management account snapshot</h3><button class="x" data-close="actualModal">×</button></div><form id="actualForm"><div class="form-grid" id="actualFormFields"></div><div class="hr"></div><div class="right"><button type="button" class="btn" data-close="actualModal">Cancel</button> <button type="submit" class="btn primary">Save snapshot</button></div></form></div></div>
+<div class="modal hidden" id="dividendModal"><div class="modal-card"><div class="modal-head"><h3 id="dividendModalTitle">Dividend</h3><button class="x" data-close="dividendModal">×</button></div><form id="dividendForm"><div class="form-grid" id="dividendFormFields"></div><div class="hr"></div><div class="right"><button type="button" class="btn" data-close="dividendModal">Cancel</button> <button type="submit" class="btn primary">Save dividend</button></div></form></div></div>
+<div class="modal hidden" id="importPreviewModal"><div class="modal-card"><div class="modal-head"><h3>Imported Sleek management accounts</h3><button class="x" data-close="importPreviewModal">×</button></div><div id="importPreview"></div><div class="hr"></div><div class="right"><button type="button" class="btn" data-close="importPreviewModal">Cancel</button> <button type="button" class="btn primary" id="confirmXlsxImport">Add / replace snapshot</button></div></div></div>
+
+<script>
+"use strict";
+const APP_KEY="mog_finance_online_v4_cache";
+const GOOGLE_CLIENT_ID="1087290113731-kr73169jjht9jeah8lfnf5m4kau3tgjt.apps.googleusercontent.com";
+const DRIVE_SCOPE="https://www.googleapis.com/auth/drive.appdata";
+const DRIVE_FILE_NAME="mog-finance-data.json";
+const EMPTY_STATE={
+ version:4,
+ settings:{
+  fx:1,selectedMonthEnd:"",fyStart:"",fyEnd:"",personalStart:"",personalEnd:"",mogDayRate:0,serviceFee:0,
+  monthlySalarySGD:0,companyTaxReservePct:0.15,operatingBufferUSD:0,forecastMonthlyOpexUSD:0,
+  currentFYTaxPaidUSD:0,corpRebatePct:0,corpRebateCapSGD:0,suteEligible:true,
+  personalTaxPaidSGD:0,personalReliefsSGD:0,nesWithholdingRate:0,nesDayRate:0,nesAllowance:0,
+  nesLeaveDays:0,nesPublicHolidays:0,comparisonWorkDays:0,comparisonMOGOpexSGD:0
+ },
+ monthly:[],actuals:[],dividends:[],currentBank:null,proposedDividend:0
+};
+let state=loadState();
+let editingActual=null,editingDividend=null,pendingXlsx=null;
+
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function loadState(){
+ try{const v=localStorage.getItem(APP_KEY);if(v){const p=JSON.parse(v);if(p&&p.settings&&p.monthly&&p.actuals&&p.dividends)return p}}catch(e){}
+ return clone(EMPTY_STATE);
+}
+let tokenClient=null,accessToken="",tokenExpiresAt=0,driveFileId="",cloudBaselineModifiedTime="",cloudSaveTimer=null,cloudDirty=false,cloudBusy=false,cloudConflict=false,suppressCloudSave=false,appReady=false;
+function saveState(){
+ try{
+  localStorage.setItem(APP_KEY,JSON.stringify(state));
+  document.getElementById("saveStatus").textContent="Cached "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+ }catch(e){document.getElementById("saveStatus").textContent="Local cache unavailable — export a backup";}
+ if(appReady&&!suppressCloudSave){cloudDirty=true;if(accessToken)scheduleCloudSave();updateCloudUI();}
+}
+function n(v,d=0){const x=Number(v);return Number.isFinite(x)?x:d}
+function maybeNum(v){if(v===""||v===null||v===undefined)return null;const x=Number(v);return Number.isFinite(x)?x:null}
+function fmtUSD(v,dec=0){return new Intl.NumberFormat("en-SG",{style:"currency",currency:"USD",currencyDisplay:"narrowSymbol",maximumFractionDigits:dec,minimumFractionDigits:dec}).format(n(v))}
+function fmtSGD(v,dec=0){
+ const x=n(v),a=Math.abs(x);
+ const num=new Intl.NumberFormat("en-SG",{style:"decimal",maximumFractionDigits:dec,minimumFractionDigits:dec}).format(a);
+ return `${x<0?"-":""}S$${num}`;
+}
+function fmtPct(v,dec=1){return (n(v)*100).toFixed(dec)+"%"}
+function fmtDate(s){if(!s)return"—";const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})}
+function fmtMonth(s){if(!s)return"—";const [y,m]=s.split("-").map(Number);return new Date(y,m-1,1).toLocaleDateString("en-GB",{month:"short",year:"numeric"})}
+function dateVal(s){return s||""}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
+
+function residentTax(income){
+ let x=Math.max(0,n(income)),tax=0;
+ const bands=[[20000,0],[10000,.02],[10000,.035],[40000,.07],[40000,.115],[40000,.15],[40000,.18],[40000,.19],[40000,.195],[40000,.20],[180000,.22],[500000,.23],[Infinity,.24]];
+ let rem=x;
+ for(const [width,rate] of bands){const amt=Math.min(rem,width);if(amt>0)tax+=amt*rate;rem-=amt;if(rem<=0)break}
+ return tax;
+}
+function corpTaxSGD(taxable){
+ let x=Math.max(0,n(taxable)),tax=0;
+ if(state.settings.suteEligible){
+  tax+=Math.min(x,100000)*.0425;
+  tax+=Math.max(0,Math.min(x-100000,100000))*.085;
+  tax+=Math.max(0,x-200000)*.17;
+ }else{
+  tax+=Math.min(x,10000)*.0425;
+  tax+=Math.max(0,Math.min(x-10000,190000))*.085;
+  tax+=Math.max(0,x-200000)*.17;
+ }
+ const rebate=Math.min(tax*n(state.settings.corpRebatePct),n(state.settings.corpRebateCapSGD));
+ return Math.max(0,tax-rebate);
+}
+function revenueUsed(row){const rec=maybeNum(row.recordedRevenue);return rec!==null?rec:n(row.days)*n(row.rate)+n(row.service)}
+function salaryUSD(row){const val=maybeNum(row.salaryUSD);return val!==null?val:n(row.salarySGD)/Math.max(n(state.settings.fx),.0001)}
+function rowOpex(row){const val=maybeNum(row.opexForecast);return val!==null?val:n(state.settings.forecastMonthlyOpexUSD)}
+function latestActual(){
+ if(!state.actuals.length)return null;
+ let target=state.settings.selectedMonthEnd;
+ return state.actuals.find(a=>a.monthEnd===target)||[...state.actuals].sort((a,b)=>a.monthEnd.localeCompare(b.monthEnd)).reverse()[0];
+}
+function dividendsThrough(date){
+ return state.dividends.filter(d=>d.declarationDate && dateVal(d.declarationDate)<=date).reduce((s,d)=>s+n(d.amountUSD),0);
+}
+function currentBankCashUSD(){
+ const b=state.currentBank;if(!b)return null;
+ const fx=Math.max(n(b.fx),.0001);
+ return n(b.revolutUSD)+n(b.sleekUSD)+(n(b.revolutSGD)+n(b.sleekSGD))/fx;
+}
+function calc(){
+ const s=state.settings,a=latestActual();
+ if(!a)return {missing:true};
+ const fx=Math.max(n(s.fx),.0001),selected=a.monthEnd;
+ const salYTD=state.monthly.filter(r=>r.period>=s.personalStart&&r.period<=selected).reduce((z,r)=>z+n(r.salarySGD),0);
+ const salAnnual=state.monthly.filter(r=>r.period>=s.personalStart&&r.period<=s.personalEnd).reduce((z,r)=>z+n(r.salarySGD),0);
+ const personalYTD=residentTax(Math.max(0,salYTD));
+ const personalForecast=residentTax(Math.max(0,salAnnual-n(s.personalReliefsSGD)));
+ const personalOutstandingYTD=Math.max(0,personalYTD-n(s.personalTaxPaidSGD));
+ const personalReserve=Math.max(0,personalForecast-n(s.personalTaxPaidSGD));
+
+ const taxableSGD=Math.max(0,(n(a.profit)+n(a.taxAdjustments))*fx);
+ const companyTax=corpTaxSGD(taxableSGD);
+ const companyTaxUSD=companyTax/fx;
+ const taxPaid=Math.max(n(s.currentFYTaxPaidUSD),n(a.currentTaxPaid));
+ const companyTaxReserve=Math.max(0,n(a.profit)*n(s.companyTaxReservePct)-taxPaid);
+ const regDivs=dividendsThrough(selected);
+ const usedDivs=Math.max(regDivs,n(a.dividendsYTD));
+ const pendingRequests=state.dividends.filter(d=>String(d.status||"").toLowerCase().startsWith("requested")).reduce((z,d)=>z+n(d.amountUSD),0);
+ const remainingDistributable=Math.max(0,n(a.profit)-usedDivs-companyTaxReserve);
+ const useLive=state.currentBank && state.currentBank.snapshotDate>=selected;
+ const currentCash=useLive?currentBankCashUSD():n(a.cash);
+ const currentAR=useLive?n(state.currentBank.currentAR):n(a.ar);
+ const currentAP=useLive?n(state.currentBank.currentAP):n(a.ap);
+ const currentDueTo=useLive?n(state.currentBank.currentDueTo):n(a.dueTo);
+ const minCash=Math.max(0,currentAP)+Math.max(0,currentDueTo)+companyTaxReserve+n(s.operatingBufferUSD);
+ const cashCapacity=Math.max(0,currentCash-minCash);
+ const safeBefore=Math.max(0,Math.min(remainingDistributable,cashCapacity));
+ const safeAfterPending=Math.min(remainingDistributable-pendingRequests,cashCapacity-pendingRequests);
+ const afterAR=Math.max(0,Math.min(remainingDistributable,currentCash+currentAR-minCash));
+
+ const remainingRows=state.monthly.filter(r=>r.period>selected&&r.period<=s.fyEnd);
+ const remRevenue=remainingRows.reduce((z,r)=>z+revenueUsed(r),0);
+ const remSalary=remainingRows.reduce((z,r)=>z+salaryUSD(r),0);
+ const remOpex=remainingRows.reduce((z,r)=>z+rowOpex(r),0);
+ const fyPBT=n(a.profit)+remRevenue-remSalary-remOpex;
+ const fyTax=corpTaxSGD(Math.max(0,fyPBT*fx));
+ const fyTaxReserveUSD=Math.max(0,fyPBT)*n(s.companyTaxReservePct);
+ const forecastRevenue=n(a.sales)+remRevenue;
+
+ const work=n(s.comparisonWorkDays);
+ const nesGrossUSD=work*n(s.nesDayRate)+12*n(s.nesAllowance)+n(s.nesLeaveDays)*n(s.nesDayRate)+n(s.nesPublicHolidays)*n(s.nesDayRate);
+ const nesGrossSGD=nesGrossUSD*fx;
+ const nesTax=residentTax(nesGrossSGD);
+ const nesWithheld=nesGrossSGD*n(s.nesWithholdingRate);
+ const nesNet=nesGrossSGD-nesTax;
+ const mogGrossUSD=work*n(s.mogDayRate)+12*n(s.serviceFee);
+ const mogGrossSGD=mogGrossUSD*fx;
+ const mogSalary=12*n(s.monthlySalarySGD);
+ const mogPBT=Math.max(0,mogGrossSGD-mogSalary-n(s.comparisonMOGOpexSGD));
+ const mogCorpTax=corpTaxSGD(mogPBT);
+ const mogCompanyAfter=mogPBT-mogCorpTax;
+ const mogPersonalTax=residentTax(Math.max(0,mogSalary-n(s.personalReliefsSGD)));
+ const mogPersonalNet=mogSalary-mogPersonalTax;
+ const mogValue=mogPersonalNet+mogCompanyAfter;
+ const advantage=mogValue-nesNet;
+
+ return {a,selected,fx,salYTD,salAnnual,personalYTD,personalForecast,personalOutstandingYTD,personalReserve,
+  taxableSGD,companyTax,companyTaxUSD,taxPaid,companyTaxReserve,regDivs,usedDivs,
+  remainingDistributable,minCash,cashCapacity,safe:safeBefore,safeBefore,safeAfterPending,pendingRequests,currentCash,currentAR,afterAR,remRevenue,remSalary,remOpex,fyPBT,fyTax,fyTaxReserveUSD,forecastRevenue,
+  nesGrossUSD,nesGrossSGD,nesTax,nesWithheld,nesNet,mogGrossUSD,mogGrossSGD,mogSalary,mogPBT,mogCorpTax,mogCompanyAfter,mogPersonalTax,mogPersonalNet,mogValue,advantage};
+}
+
+function renderAll(){
+ const c=calc();
+ renderMonthSelect();
+ if(!c.missing){renderDashboard(c);renderDividends(c);renderCompare(c)}
+ renderMonthly();renderActuals();renderSettings();renderStorage();
+ document.getElementById("monthPill").textContent=c.missing?"No month":fmtDate(c.selected);
+ saveState();
+}
+function metric(label,value,sub="",cls=""){return `<div class="card metric ${cls}"><div class="label">${label}</div><div class="value">${value}</div>${sub?`<div class="sub">${sub}</div>`:""}</div>`}
+function renderDashboard(c){
+ const a=c.a;
+ document.getElementById("dashboardTop").innerHTML=[
+  metric("Revenue YTD",fmtUSD(a.sales),"Revised Sleek management accounts"),
+  metric("Provisional profit YTD",fmtUSD(a.profit),"Revised accounts; before company-tax pot"),
+  metric("Current cash",fmtUSD(c.currentCash),`31-Aug cash ${fmtUSD(a.cash)} · current A/R ${fmtUSD(c.currentAR)}`),
+  metric("Dividends declared YTD",fmtUSD(c.usedDivs),c.regDivs!==n(a.dividendsYTD)?`Register ${fmtUSD(c.regDivs)} · Sleek ${fmtUSD(a.dividendsYTD)}`:"Register agrees with Sleek")
+ ].join("");
+ document.getElementById("safeDividend").textContent=fmtUSD(c.safeBefore);
+ document.getElementById("safeDividendSub").textContent=`Cash capacity ${fmtUSD(c.cashCapacity)} · profit capacity ${fmtUSD(c.remainingDistributable)}`;
+ document.getElementById("potentialDividend").textContent=fmtUSD(c.pendingRequests);
+ document.getElementById("minCashRetain").textContent=fmtUSD(c.safeAfterPending);
+ document.getElementById("dividendBreakdown").innerHTML=`
+  <div class="k">Opening retained earnings</div><div class="v">${fmtUSD(a.retainedEarnings)}</div>
+  <div class="k">Current-year profit YTD</div><div class="v">${fmtUSD(a.profit)}</div>
+  <div class="k">Estimated company tax (before buffer)</div><div class="v">(${fmtUSD(c.companyTaxUSD)})</div>
+  <div class="k">Dividends already declared</div><div class="v">(${fmtUSD(c.usedDivs)})</div>
+  <div class="k total">Remaining distributable-profit capacity</div><div class="v total">${fmtUSD(c.remainingDistributable)}</div>
+  <div class="k">Current bank cash (07-Sep)</div><div class="v">${fmtUSD(c.currentCash)}</div>
+  <div class="k">31-Aug accountant cash</div><div class="v">${fmtUSD(a.cash)}</div>
+  <div class="k">Current A/P + due to shareholder</div><div class="v">(${fmtUSD((state.currentBank?n(state.currentBank.currentAP):n(a.ap))+(state.currentBank?n(state.currentBank.currentDueTo):n(a.dueTo)))})</div>
+  <div class="k">Company tax pot — ${fmtPct(state.settings.companyTaxReservePct,0)} of profit</div><div class="v">(${fmtUSD(c.companyTaxReserve)})</div>
+  <div class="k">Operating cash buffer</div><div class="v">(${fmtUSD(state.settings.operatingBufferUSD)})</div>
+  <div class="k total">Cash capacity</div><div class="v total">${fmtUSD(c.cashCapacity)}</div>`;
+ document.getElementById("personalCards").innerHTML=[
+  metric("Salary earned YTD",fmtSGD(c.salYTD),`To ${fmtDate(c.selected)}`),
+  metric("Personal tax accrued YTD",fmtSGD(c.personalYTD),"Approximate resident tax on salary earned"),
+  metric("Forecast annual personal tax",fmtSGD(c.personalForecast),`Forecast salary ${fmtSGD(c.salAnnual)}`),
+  metric("Personal tax still to reserve",fmtSGD(c.personalReserve),`Paid/withheld recorded: ${fmtSGD(state.settings.personalTaxPaidSGD)}`,c.personalReserve>0?"warn":"")
+ ].join("");
+ document.getElementById("companyTaxCards").innerHTML=[
+  metric("Estimated company tax YTD",fmtSGD(c.companyTax),`Taxable-profit proxy ${fmtSGD(c.taxableSGD)}`),
+  metric("Company tax pot — 15% rule",fmtUSD(c.companyTaxReserve),`${fmtPct(state.settings.companyTaxReservePct,0)} of cumulative profit`),
+  metric("Forecast FY PBT",fmtUSD(c.fyPBT),`Forecast revenue ${fmtUSD(c.forecastRevenue)}`),
+  metric("Forecast FY company tax",fmtSGD(c.fyTax),`15% company tax pot ${fmtUSD(c.fyTaxReserveUSD)}`)
+ ].join("");
+ const diff=c.regDivs-n(a.dividendsYTD);
+ let recon=`<div class="notice ${Math.abs(diff)<.01?"":"warn"}"><b>Dividend register vs Sleek:</b> ${Math.abs(diff)<.01?"Reconciled at "+fmtUSD(c.regDivs):`Difference ${fmtUSD(diff)}. Safe-dividend logic uses the higher total (${fmtUSD(c.usedDivs)}) until reconciled.`}</div>`;
+ if(state.currentBank){const expected=25067.24+n(state.currentBank.augInvoiceCollected)-n(state.currentBank.augSalaryPaidUSD),actual=n(state.currentBank.revolutUSD);recon+=`<div class="notice" style="margin-top:8px"><b>Revised salary treatment:</b> August salary expense ${fmtUSD(state.currentBank.augSalaryAccrualUSD)} is accrued to 31-Aug; the ${fmtUSD(state.currentBank.augSalaryPaidUSD)} cash payment on 04-Sep clears that liability, with the small difference treated as settlement/FX. Current A/P used for the cash test is ${fmtUSD(state.currentBank.currentAP)}.</div><div class="notice" style="margin-top:8px"><b>Revolut USD post-month-end check:</b> 31-Aug ${fmtUSD(25067.24)} + invoice ${fmtUSD(state.currentBank.augInvoiceCollected)} - August salary ${fmtUSD(state.currentBank.augSalaryPaidUSD)} = ${fmtUSD(expected)}. Current screenshot ${fmtUSD(actual)}. Difference ${fmtUSD(actual-expected,2)}.</div>`}
+ if(Math.abs(n(a.profit)-(n(a.sales)-n(a.expenses)))>.02)recon+=`<div class="notice warn" style="margin-top:8px"><b>P&L check:</b> Sales less expenses does not exactly equal the entered profit. Review the snapshot.</div>`;
+ document.getElementById("reconciliation").innerHTML=recon;
+ document.getElementById("proposedDividend").value=state.proposedDividend||"";
+ renderProposal(c);
+}
+function renderProposal(c){
+ const p=Math.max(0,n(document.getElementById("proposedDividend").value));
+ state.proposedDividend=p;saveState();
+ const post=n(c.currentCash)-n(c.pendingRequests)-p,head=post-c.minCash,profitHead=c.remainingDistributable-n(c.pendingRequests)-p;
+ document.getElementById("postDividendCash").textContent=fmtUSD(post);
+ const ok=p<=Math.max(0,c.safeAfterPending)+.005;
+ const box=document.getElementById("proposalStatus");box.className="proposal-result "+(ok?"good":"bad");
+ document.getElementById("proposalStatusText").textContent=ok?"SAFE":"TOO HIGH";
+ document.getElementById("proposalHeadroom").textContent=ok?`Cash headroom ${fmtUSD(head)} · profit headroom ${fmtUSD(profitHead)}`:`Exceeds remaining safe amount by ${fmtUSD(p-Math.max(0,c.safeAfterPending))}`;
+ document.getElementById("proposalCash").className="proposal-result "+(head>=0?"good":"bad");
+}
+function renderMonthSelect(){
+ const sel=document.getElementById("dashboardMonth");
+ const sorted=[...state.actuals].sort((a,b)=>b.monthEnd.localeCompare(a.monthEnd));
+ sel.innerHTML=sorted.map(a=>`<option value="${a.monthEnd}" ${a.monthEnd===state.settings.selectedMonthEnd?"selected":""}>${fmtDate(a.monthEnd)}</option>`).join("");
+}
+function renderMonthly(){
+ const tbody=document.getElementById("monthlyBody");
+ tbody.innerHTML=[...state.monthly].sort((a,b)=>a.period.localeCompare(b.period)).map((r,i)=>{
+  const idx=state.monthly.indexOf(r),expected=n(r.days)*n(r.rate)+n(r.service),used=revenueUsed(r);
+  return `<tr>
+   <td>${fmtMonth(r.period)}</td>
+   <td><input type="number" data-midx="${idx}" data-key="days" value="${esc(r.days)}"></td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="rate" value="${esc(r.rate)}"></td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="service" value="${esc(r.service)}"></td>
+   <td class="num">${fmtUSD(expected,2)}</td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="recordedRevenue" value="${r.recordedRevenue??""}"></td>
+   <td class="num"><b>${fmtUSD(used,2)}</b></td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="salarySGD" value="${esc(r.salarySGD)}"></td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="salaryUSD" value="${r.salaryUSD??""}"></td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="opexForecast" value="${r.opexForecast??""}" placeholder="${state.settings.forecastMonthlyOpexUSD}"></td>
+   <td><input type="text" data-midx="${idx}" data-key="notes" value="${esc(r.notes)}"></td>
+   <td><button class="btn small danger" data-delmonth="${idx}">×</button></td>
+  </tr>`}).join("");
+}
+function renderActuals(){
+ const tbody=document.getElementById("actualsBody");
+ tbody.innerHTML=[...state.actuals].sort((a,b)=>b.monthEnd.localeCompare(a.monthEnd)).map(a=>{
+  const idx=state.actuals.indexOf(a);
+  return `<tr>
+   <td><button class="btn small" data-selectactual="${a.monthEnd}">${fmtDate(a.monthEnd)}</button></td>
+   <td class="num">${fmtUSD(a.sales,2)}</td><td class="num">${fmtUSD(a.expenses,2)}</td><td class="num">${fmtUSD(a.wages,2)}</td><td class="num"><b>${fmtUSD(a.profit,2)}</b></td>
+   <td class="num">${fmtUSD(a.cash,2)}</td><td class="num">${fmtUSD(a.ar,2)}</td><td class="num">${fmtUSD(a.ap,2)}</td><td class="num">${fmtUSD(a.dividendsYTD,2)}</td><td class="num">${fmtUSD(a.taxAdjustments,2)}</td>
+   <td>${esc(a.source)}</td><td><button class="btn small" data-editactual="${idx}">Edit</button> <button class="btn small danger" data-delactual="${idx}">×</button></td>
+  </tr>`}).join("");
+}
+function renderDividends(c){
+ const tbody=document.getElementById("dividendBody");
+ tbody.innerHTML=[...state.dividends].sort((a,b)=>b.declarationDate.localeCompare(a.declarationDate)).map(d=>{
+  const idx=state.dividends.indexOf(d);
+  return `<tr><td>${esc(d.period)}</td><td>${fmtDate(d.declarationDate)}</td><td>${fmtDate(d.cashDate)}</td><td class="num">${fmtUSD(d.amountUSD,2)}</td><td class="num">${n(d.fx).toFixed(3)}</td><td class="num">${fmtSGD(n(d.amountUSD)*n(d.fx),2)}</td>
+  <td><span class="badge good">${esc(d.status)}</span></td><td>${esc(d.documentation)}</td><td>${esc(d.reference)}</td><td>${esc(d.handling)}${d.notes?`<div class="small muted">${esc(d.notes)}</div>`:""}</td>
+  <td><button class="btn small" data-editdiv="${idx}">Edit</button> <button class="btn small danger" data-deldiv="${idx}">×</button></td></tr>`}).join("");
+ document.getElementById("registeredDivs").textContent=fmtUSD(c.regDivs);
+ document.getElementById("accountantDivs").textContent=fmtUSD(c.a.dividendsYTD);
+ const diff=c.regDivs-n(c.a.dividendsYTD);
+ document.getElementById("divRecon").textContent=fmtUSD(diff);
+ const card=document.getElementById("divReconCard");card.className="card metric "+(Math.abs(diff)<.01?"highlight":"warn");
+}
+function renderCompare(c){
+ const advantagePct=c.nesNet?c.advantage/c.nesNet:0;
+ document.getElementById("compareCards").innerHTML=[
+  metric("NES after-tax value",fmtSGD(c.nesNet),`Gross ${fmtSGD(c.nesGrossSGD)}`),
+  metric("MOG after-tax economic value",fmtSGD(c.mogValue),`Personal net + after-tax company profit`),
+  metric("MOG advantage",fmtSGD(c.advantage),fmtPct(advantagePct),c.advantage>=0?"highlight":"danger")
+ ].join("");
+ const rows=[
+  ["Actual work days / year",state.settings.comparisonWorkDays,state.settings.comparisonWorkDays,"num"],
+  ["Day rate",fmtUSD(state.settings.nesDayRate),fmtUSD(state.settings.mogDayRate)],
+  ["Monthly allowance",fmtUSD(state.settings.nesAllowance),fmtUSD(state.settings.serviceFee)],
+  ["Paid leave days",state.settings.nesLeaveDays,0,"num"],
+  ["Paid PH day-equivalents",state.settings.nesPublicHolidays,0,"num"],
+  ["Gross annual compensation / revenue",fmtUSD(c.nesGrossUSD),fmtUSD(c.mogGrossUSD)],
+  ["Gross annual S$",fmtSGD(c.nesGrossSGD),fmtSGD(c.mogGrossSGD)],
+  ["Salary to Shaun",fmtSGD(0),fmtSGD(c.mogSalary)],
+  ["Company non-wage opex",fmtSGD(0),fmtSGD(state.settings.comparisonMOGOpexSGD)],
+  ["Company profit before tax",fmtSGD(0),fmtSGD(c.mogPBT)],
+  ["Estimated company tax",fmtSGD(0),fmtSGD(c.mogCorpTax)],
+  ["Company after-tax profit",fmtSGD(0),fmtSGD(c.mogCompanyAfter)],
+  ["Estimated personal tax",fmtSGD(c.nesTax),fmtSGD(c.mogPersonalTax)],
+  ["NES 18% withholding",fmtSGD(c.nesWithheld),fmtSGD(0)],
+  ["NES refund / (extra tax due)",fmtSGD(c.nesWithheld-c.nesTax),fmtSGD(0)],
+  ["Personal net",fmtSGD(c.nesNet),fmtSGD(c.mogPersonalNet)],
+  ["Total after-tax economic value",fmtSGD(c.nesNet),fmtSGD(c.mogValue)]
+ ];
+ document.getElementById("compareBody").innerHTML=rows.map((r,i)=>`<tr class="${i===rows.length-1?"compare-win":""}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+}
+const settingDefs={
+ contract:[
+  ["fx","Planning FX — S$ per US$","number","0.001"],["mogDayRate","Current MOG day rate — USD","number","0.01"],["serviceFee","Monthly service allowance — USD","number","0.01"],["monthlySalarySGD","Monthly salary — S$","number","1"],
+  ["fyStart","Company FY start","date"],["fyEnd","Company FY end","date"],["personalStart","Personal income year start","date"],["personalEnd","Personal income year end","date"],
+  ["forecastMonthlyOpexUSD","Forecast monthly non-wage opex — USD","number","0.01"]
+ ],
+ tax:[
+  ["companyTaxReservePct","Company tax pot — % of company profit","percent","0.01"],["operatingBufferUSD","Operating cash buffer — USD","number","1"],["currentFYTaxPaidUSD","Current FY company tax paid — USD","number","0.01"],
+  ["corpRebatePct","CIT rebate % (leave 0 unless applicable to this YA)","percent","0.01"],["corpRebateCapSGD","CIT rebate cap — S$","number","1"],["suteEligible","Use start-up tax exemption","checkbox"],
+  ["personalTaxPaidSGD","Personal tax already paid / withheld — S$","number","1"],["personalReliefsSGD","Annual personal reliefs/deductions — S$","number","1"]
+ ],
+ nes:[
+  ["nesWithholdingRate","NES historical withholding rate","percent","0.01"],["nesDayRate","NES old day rate — USD","number","0.01"],["nesAllowance","NES monthly allowance — USD","number","0.01"],["nesLeaveDays","NES paid annual leave days","number","1"],["nesPublicHolidays","NES paid PH day-equivalents","number","1"],
+  ["comparisonWorkDays","Comparison work days / year","number","1"],["comparisonMOGOpexSGD","Comparison MOG non-wage opex — S$/year","number","1"]
+ ]
+};
+function settingField(def){
+ const [key,label,type,step]=def,val=state.settings[key];
+ if(type==="checkbox")return `<div class="field"><label>${label}</label><select data-setting="${key}"><option value="true" ${val?"selected":""}>Yes</option><option value="false" ${!val?"selected":""}>No</option></select></div>`;
+ if(type==="percent")return `<div class="field"><label>${label}</label><input data-setting="${key}" type="number" step="${step||.01}" value="${n(val)*100}"><div class="small muted">Enter as %</div></div>`;
+ return `<div class="field"><label>${label}</label><input data-setting="${key}" type="${type}" ${step?`step="${step}"`:""} value="${esc(val)}"></div>`;
+}
+function renderSettings(){
+ document.getElementById("settingsContract").innerHTML=settingDefs.contract.map(settingField).join("");
+ document.getElementById("settingsTax").innerHTML=settingDefs.tax.map(settingField).join("");
+ document.getElementById("settingsNES").innerHTML=settingDefs.nes.map(settingField).join("");
+}
+function renderStorage(){
+ let ok=true,msg="Local browser cache is available.";
+ try{localStorage.setItem("__mogtest","1");localStorage.removeItem("__mogtest")}catch(e){ok=false;msg="Local cache is not available. Keep a downloaded JSON backup."}
+ document.getElementById("storageInfo").className="notice "+(ok?"":"bad");
+ document.getElementById("storageInfo").innerHTML=msg+`<br><span class="small">Cached data size: ${Math.round(JSON.stringify(state).length/1024)} KB</span>`;
+ updateCloudUI();
+}
+
+
+function hasFinanceData(){return !!(state.actuals?.length||state.monthly?.length||state.dividends?.length||state.currentBank);}
+function setCloudPill(text,kind=""){
+ const p=document.getElementById("cloudPill");if(!p)return;p.textContent=text;p.className="cloud-pill"+(kind?" "+kind:"");
+}
+function updateCloudUI(){
+ const connected=!!accessToken;
+ const sign=document.getElementById("googleSignInBtn");if(sign){sign.textContent=connected?"Drive connected":"Connect Google Drive";sign.classList.toggle("green",connected)}
+ const cbtn=document.getElementById("cloudConnectBtn");if(cbtn)cbtn.textContent=connected?"Reconnect Google Drive":"Connect Google Drive";
+ const d=document.getElementById("cloudDetails");
+ if(cloudConflict){setCloudPill("Sync conflict","bad");if(d){d.className="notice bad";d.innerHTML="The cloud copy changed on another device while this device also has changes. Reload the cloud copy, or use Save now and confirm a force-save."}return;}
+ if(cloudBusy){setCloudPill("Syncing…","warn");if(d){d.className="notice";d.innerHTML="Synchronising with Google Drive…"}return;}
+ if(!connected){setCloudPill(cloudDirty?"Local changes":"Drive not connected",cloudDirty?"warn":"");if(d){d.className="notice";d.innerHTML=(cloudDirty?"Changes are cached on this device but not yet in Google Drive. ":"")+"Connect Google Drive to use the same data on Mac and phone."}return;}
+ if(cloudDirty){setCloudPill("Changes pending","warn");if(d){d.className="notice warn";d.innerHTML="Connected. Local changes are waiting to be saved to Google Drive."}return;}
+ setCloudPill(driveFileId?"Drive synced":"Drive ready","good");
+ if(d){d.className="notice";d.innerHTML=driveFileId?`Synced to <b>${DRIVE_FILE_NAME}</b> in Google Drive app data.<br><span class="small">Last cloud version: ${cloudBaselineModifiedTime?new Date(cloudBaselineModifiedTime).toLocaleString():"—"}</span>`:`Google Drive is connected. No cloud data file exists yet; the first change or imported backup will create it.`}
+}
+function initGoogle(){
+ if(!window.google||!google.accounts||!google.accounts.oauth2){setTimeout(initGoogle,500);return;}
+ if(tokenClient)return;
+ tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:DRIVE_SCOPE,callback:async resp=>{
+  if(resp.error){accessToken="";updateCloudUI();alert("Google sign-in failed: "+resp.error);return;}
+  accessToken=resp.access_token||"";tokenExpiresAt=Date.now()+(Number(resp.expires_in||3600)-60)*1000;cloudConflict=false;updateCloudUI();
+  try{await loadCloudState();}catch(e){console.error(e);alert("Google Drive connected, but the finance data could not be loaded: "+e.message)}
+ }});
+}
+function connectGoogle(){initGoogle();if(!tokenClient){alert("Google sign-in is still loading. Try again in a moment.");return;}tokenClient.requestAccessToken({prompt:accessToken?"":"consent"});}
+function disconnectGoogle(){
+ if(accessToken&&window.google?.accounts?.oauth2?.revoke)google.accounts.oauth2.revoke(accessToken,()=>{});
+ accessToken="";tokenExpiresAt=0;driveFileId="";cloudBaselineModifiedTime="";cloudConflict=false;cloudBusy=false;updateCloudUI();
+}
+async function driveFetch(url,options={}){
+ if(!accessToken)throw new Error("Google Drive is not connected.");
+ const headers=new Headers(options.headers||{});headers.set("Authorization","Bearer "+accessToken);
+ const res=await fetch(url,{...options,headers});
+ if(res.status===401){accessToken="";updateCloudUI();throw new Error("Google session expired. Click Connect Google Drive again.");}
+ if(!res.ok){let detail="";try{detail=(await res.json())?.error?.message||""}catch(e){}throw new Error(detail||`Google Drive error ${res.status}`)}
+ return res;
+}
+async function findCloudFile(){
+ const q=encodeURIComponent(`name='${DRIVE_FILE_NAME}' and trashed=false`);
+ const url=`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,name,modifiedTime,size)&pageSize=10`;
+ const data=await (await driveFetch(url)).json();
+ const f=(data.files||[]).sort((a,b)=>String(b.modifiedTime).localeCompare(String(a.modifiedTime)))[0];
+ if(f){driveFileId=f.id;cloudBaselineModifiedTime=f.modifiedTime||"";return f}
+ driveFileId="";cloudBaselineModifiedTime="";return null;
+}
+async function loadCloudState(){
+ cloudBusy=true;updateCloudUI();
+ try{
+  const f=await findCloudFile();
+  if(!f){cloudDirty=hasFinanceData();cloudBusy=false;updateCloudUI();if(cloudDirty)scheduleCloudSave();return;}
+  const remote=await (await driveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(f.id)}?alt=media`)).json();
+  if(!remote||!remote.settings||!Array.isArray(remote.monthly)||!Array.isArray(remote.actuals)||!Array.isArray(remote.dividends))throw new Error("Cloud file is not a valid MOG Finance data file.");
+  suppressCloudSave=true;state=remote;localStorage.setItem(APP_KEY,JSON.stringify(state));renderAll();suppressCloudSave=false;
+  cloudDirty=false;cloudConflict=false;cloudBusy=false;updateCloudUI();
+ }catch(e){suppressCloudSave=false;cloudBusy=false;updateCloudUI();throw e}
+}
+function scheduleCloudSave(){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(()=>saveCloudState(false),1200);}
+async function cloudMetadata(){
+ if(!driveFileId)return null;
+ return (await driveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(driveFileId)}?fields=id,modifiedTime,size`)).json();
+}
+async function saveCloudState(force=false){
+ if(!accessToken||cloudBusy||!cloudDirty)return;
+ cloudBusy=true;updateCloudUI();
+ try{
+  if(!driveFileId)await findCloudFile();
+  if(driveFileId&&!force){
+   const meta=await cloudMetadata();
+   if(cloudBaselineModifiedTime&&meta.modifiedTime&&meta.modifiedTime!==cloudBaselineModifiedTime){cloudConflict=true;cloudBusy=false;updateCloudUI();return;}
+  }
+  const payload=JSON.stringify(state);
+  let data;
+  if(driveFileId){
+   data=await (await driveFetch(`https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(driveFileId)}?uploadType=media&fields=id,modifiedTime`,{method:"PATCH",headers:{"Content-Type":"application/json;charset=UTF-8"},body:payload})).json();
+  }else{
+   const boundary="mog_finance_"+Date.now();
+   const meta=JSON.stringify({name:DRIVE_FILE_NAME,parents:["appDataFolder"]});
+   const body=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${meta}\r\n--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${payload}\r\n--${boundary}--`;
+   data=await (await driveFetch(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,modifiedTime`,{method:"POST",headers:{"Content-Type":`multipart/related; boundary=${boundary}`},body})).json();
+  }
+  driveFileId=data.id||driveFileId;cloudBaselineModifiedTime=data.modifiedTime||cloudBaselineModifiedTime;cloudDirty=false;cloudConflict=false;cloudBusy=false;document.getElementById("saveStatus").textContent="Drive synced "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});updateCloudUI();
+ }catch(e){cloudBusy=false;updateCloudUI();console.error(e);if(String(e.message).includes("expired"))return;setCloudPill("Sync error","bad");const d=document.getElementById("cloudDetails");if(d){d.className="notice bad";d.textContent="Sync error: "+e.message}}
+}
+async function manualSaveCloud(){
+ if(!accessToken){connectGoogle();return;}
+ if(cloudConflict){if(!confirm("The cloud copy changed on another device. Force-save THIS device over the newer cloud copy?"))return;cloudConflict=false;cloudDirty=true;await saveCloudState(true);return;}
+ cloudDirty=true;await saveCloudState(false);
+}
+async function manualReloadCloud(){
+ if(!accessToken){connectGoogle();return;}
+ if(cloudDirty&&!confirm("Reloading will discard unsaved changes on this device and replace them with the Google Drive copy. Continue?"))return;
+ await loadCloudState();
+}
+async function pollCloud(){
+ if(!accessToken||!driveFileId||cloudBusy)return;
+ try{const meta=await cloudMetadata();if(meta?.modifiedTime&&cloudBaselineModifiedTime&&meta.modifiedTime!==cloudBaselineModifiedTime){if(cloudDirty){cloudConflict=true;updateCloudUI();}else await loadCloudState();}}catch(e){}
+}
+
+function showPage(name){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.querySelectorAll(".navbtn").forEach(b=>b.classList.remove("active"));
+ document.getElementById("page-"+name).classList.add("active");
+ document.querySelector(`.navbtn[data-page="${name}"]`).classList.add("active");
+ document.getElementById("topTitle").textContent=document.querySelector(`.navbtn[data-page="${name}"]`).textContent.trim();
+ document.getElementById("sidebar").classList.remove("open");
+}
+document.querySelectorAll(".navbtn").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+document.getElementById("mobileMenu").addEventListener("click",()=>document.getElementById("sidebar").classList.toggle("open"));
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>document.getElementById(b.dataset.close).classList.add("hidden")));
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.add("hidden")}));
+
+document.getElementById("googleSignInBtn").addEventListener("click",connectGoogle);
+document.getElementById("cloudConnectBtn").addEventListener("click",connectGoogle);
+document.getElementById("googleSignOutBtn").addEventListener("click",disconnectGoogle);
+document.getElementById("cloudSaveNowBtn").addEventListener("click",manualSaveCloud);
+document.getElementById("cloudReloadBtn").addEventListener("click",manualReloadCloud);
+document.getElementById("dashboardMonth").addEventListener("change",e=>{state.settings.selectedMonthEnd=e.target.value;renderAll()});
+document.getElementById("proposedDividend").addEventListener("input",()=>renderProposal(calc()));
+
+document.getElementById("monthlyBody").addEventListener("change",e=>{
+ const el=e.target,idx=el.dataset.midx;if(idx===undefined)return;
+ const key=el.dataset.key;
+ state.monthly[idx][key]=(key==="notes")?el.value:maybeNum(el.value);
+ renderAll();
+});
+document.getElementById("monthlyBody").addEventListener("click",e=>{
+ const idx=e.target.dataset.delmonth;if(idx===undefined)return;
+ if(confirm("Delete this month?")){state.monthly.splice(Number(idx),1);renderAll()}
+});
+document.getElementById("addMonthBtn").addEventListener("click",()=>{
+ const sorted=[...state.monthly].sort((a,b)=>a.period.localeCompare(b.period)),last=sorted[sorted.length-1];
+ const d=last?new Date(last.period+"T00:00:00"):new Date();d.setMonth(d.getMonth()+1);
+ const p=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`;
+ state.monthly.push({period:p,days:26,rate:n(state.settings.mogDayRate),service:n(state.settings.serviceFee),recordedRevenue:null,salarySGD:n(state.settings.monthlySalarySGD),salaryUSD:null,opexForecast:null,notes:"Forecast"});
+ renderAll();
+});
+
+const actualFields=[
+ ["monthEnd","Month end","date"],["sales","Sales YTD — USD","number"],["expenses","Total expenses YTD — USD","number"],["wages","Wages YTD — USD","number"],["profit","Profit YTD — USD","number"],
+ ["cash","Cash at bank — USD","number"],["ar","Accounts receivable — USD","number"],["ap","Accounts payable — USD","number"],["dueFrom","Due from shareholder — USD","number"],["dueTo","Due to shareholder — USD","number"],
+ ["dividendsYTD","Dividends paid YTD — USD","number"],["retainedEarnings","Retained earnings — USD","number"],["incomeTaxPayable","Income tax payable — USD","number"],["taxAdjustments","Tax adjustments — USD","number"],["currentTaxPaid","Current FY tax paid — USD","number"],["source","Source / notes","text","span4"]
+];
+function openActual(idx=null,preset=null){
+ editingActual=idx;
+ const a=preset||((idx===null)?{monthEnd:"",sales:0,expenses:0,wages:0,profit:0,cash:0,ar:0,ap:0,dueFrom:0,dueTo:0,dividendsYTD:0,retainedEarnings:0,incomeTaxPayable:0,taxAdjustments:0,currentTaxPaid:0,source:""}:state.actuals[idx]);
+ document.getElementById("actualModalTitle").textContent=idx===null?"Add management-account snapshot":"Edit management-account snapshot";
+ document.getElementById("actualFormFields").innerHTML=actualFields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" step="${t==="number"?".01":""}" value="${esc(a[k]??"")}"></div>`).join("");
+ document.getElementById("actualModal").classList.remove("hidden");
+}
+document.getElementById("newActualBtn").addEventListener("click",()=>openActual());
+document.getElementById("actualForm").addEventListener("submit",e=>{
+ e.preventDefault();const fd=new FormData(e.target),obj={};
+ actualFields.forEach(([k,l,t])=>obj[k]=t==="number"?n(fd.get(k)):fd.get(k));
+ if(!obj.monthEnd){alert("Month end is required.");return}
+ if(editingActual===null){const ex=state.actuals.findIndex(a=>a.monthEnd===obj.monthEnd);if(ex>=0)state.actuals[ex]=obj;else state.actuals.push(obj)}else state.actuals[editingActual]=obj;
+ state.settings.selectedMonthEnd=obj.monthEnd;document.getElementById("actualModal").classList.add("hidden");renderAll();
+});
+document.getElementById("actualsBody").addEventListener("click",e=>{
+ if(e.target.dataset.editactual!==undefined)openActual(Number(e.target.dataset.editactual));
+ if(e.target.dataset.selectactual){state.settings.selectedMonthEnd=e.target.dataset.selectactual;showPage("dashboard");renderAll()}
+ if(e.target.dataset.delactual!==undefined&&confirm("Delete this snapshot?")){state.actuals.splice(Number(e.target.dataset.delactual),1);if(state.actuals.length)state.settings.selectedMonthEnd=[...state.actuals].sort((a,b)=>b.monthEnd.localeCompare(a.monthEnd))[0].monthEnd;renderAll()}
+});
+
+const divFields=[
+ ["period","Dividend period","text"],["declarationDate","Declaration date","date"],["cashDate","Cash payment date","date"],["amountUSD","Amount — USD","number"],["fx","FX S$/US$","number"],
+ ["status","Status","text"],["documentation","Documentation","text"],["reference","Sleek reference","text"],["handling","Cash / loan handling","text","span2"],["notes","Notes","text","span2"]
+];
+function openDividend(idx=null){
+ editingDividend=idx;const d=idx===null?{period:"",declarationDate:"",cashDate:"",amountUSD:0,fx:n(state.settings.fx),status:"Declared/Paid",documentation:"To confirm",reference:"",handling:"Direct dividend",notes:""}:state.dividends[idx];
+ document.getElementById("dividendModalTitle").textContent=idx===null?"Add dividend":"Edit dividend";
+ document.getElementById("dividendFormFields").innerHTML=divFields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" step="${t==="number"?".01":""}" value="${esc(d[k]??"")}"></div>`).join("");
+ document.getElementById("dividendModal").classList.remove("hidden");
+}
+document.getElementById("newDividendBtn").addEventListener("click",()=>openDividend());
+document.getElementById("dividendForm").addEventListener("submit",e=>{
+ e.preventDefault();const fd=new FormData(e.target),obj={id:editingDividend===null?"d"+Date.now():state.dividends[editingDividend].id};
+ divFields.forEach(([k,l,t])=>obj[k]=t==="number"?n(fd.get(k)):fd.get(k));
+ if(!obj.declarationDate){alert("Declaration date is required.");return}
+ if(editingDividend===null)state.dividends.push(obj);else state.dividends[editingDividend]=obj;
+ document.getElementById("dividendModal").classList.add("hidden");renderAll();
+});
+document.getElementById("dividendBody").addEventListener("click",e=>{
+ if(e.target.dataset.editdiv!==undefined)openDividend(Number(e.target.dataset.editdiv));
+ if(e.target.dataset.deldiv!==undefined&&confirm("Delete this dividend entry?")){state.dividends.splice(Number(e.target.dataset.deldiv),1);renderAll()}
+});
+
+document.getElementById("saveSettingsBtn").addEventListener("click",()=>{
+ document.querySelectorAll("[data-setting]").forEach(el=>{
+  const k=el.dataset.setting,def=[...settingDefs.contract,...settingDefs.tax,...settingDefs.nes].find(d=>d[0]===k),type=def[2];
+  if(type==="checkbox")state.settings[k]=el.value==="true";
+  else if(type==="date")state.settings[k]=el.value;
+  else if(type==="percent")state.settings[k]=n(el.value)/100;
+  else state.settings[k]=n(el.value);
+ });
+ renderAll();showPage("dashboard");
+});
+
+function downloadBlob(content,name,type){
+ const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+document.getElementById("exportBackupBtn").addEventListener("click",()=>downloadBlob(JSON.stringify(state,null,2),`MOG_Finance_Backup_${new Date().toISOString().slice(0,10)}.json`,"application/json"));
+document.getElementById("importBackupInput").addEventListener("change",async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{const p=JSON.parse(await f.text());if(!p.settings||!p.monthly||!p.actuals||!p.dividends)throw new Error("Not a MOG Finance backup");state=p;renderAll();alert("Backup imported.")}catch(err){alert("Could not import backup: "+err.message)}
+ e.target.value="";
+});
+document.getElementById("exportSummaryBtn").addEventListener("click",()=>{
+ const c=calc(),a=c.a,rows=[
+  ["MOG Finance Summary",fmtDate(c.selected)],["Revenue YTD USD",a.sales],["Profit YTD USD",a.profit],["Cash USD",a.cash],["Accounts Receivable USD",a.ar],
+  ["Dividends YTD USD",c.usedDivs],["Estimated Actual Company Tax YTD S$",c.companyTax],["15% Company Tax Pot USD",c.companyTaxReserve],["Minimum Cash Retain USD",c.minCash],
+  ["Safe Additional Dividend USD",c.safe],["Potential After A/R USD",c.afterAR],["Salary YTD S$",c.salYTD],["Personal Tax Accrued YTD S$",c.personalYTD],
+  ["Forecast Annual Personal Tax S$",c.personalForecast],["MOG Advantage vs NES S$",c.advantage]
+ ];
+ downloadBlob(rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n"),`MOG_Finance_Summary_${c.selected}.csv`,"text/csv");
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{if(confirm("Reset this app to a blank state? If Google Drive is connected, the blank state will also replace the cloud copy. Export a backup first if needed.")){state=clone(EMPTY_STATE);renderAll()}});
+
+/* Minimal local XLSX reader: reads ZIP central directory and inflates XML using the browser DecompressionStream API. */
+async function unzip(buffer){
+ const u8=new Uint8Array(buffer),dv=new DataView(buffer);let eocd=-1;
+ for(let i=u8.length-22;i>=Math.max(0,u8.length-66000);i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break}}
+ if(eocd<0)throw new Error("Not a valid XLSX/ZIP file.");
+ const count=dv.getUint16(eocd+10,true),cdOff=dv.getUint32(eocd+16,true);let p=cdOff;const entries={};
+ const dec=new TextDecoder("utf-8");
+ for(let i=0;i<count;i++){
+  if(dv.getUint32(p,true)!==0x02014b50)throw new Error("Unsupported ZIP directory.");
+  const method=dv.getUint16(p+10,true),compSize=dv.getUint32(p+20,true),nameLen=dv.getUint16(p+28,true),extraLen=dv.getUint16(p+30,true),commentLen=dv.getUint16(p+32,true),localOff=dv.getUint32(p+42,true);
+  const name=dec.decode(u8.slice(p+46,p+46+nameLen));entries[name]={method,compSize,localOff};p+=46+nameLen+extraLen+commentLen;
+ }
+ async function read(name){
+  const e=entries[name];if(!e)return null;const o=e.localOff;if(dv.getUint32(o,true)!==0x04034b50)throw new Error("Bad ZIP entry.");
+  const nl=dv.getUint16(o+26,true),el=dv.getUint16(o+28,true),start=o+30+nl+el,compressed=u8.slice(start,start+e.compSize);
+  if(e.method===0)return compressed;
+  if(e.method===8){
+   if(typeof DecompressionStream==="undefined")throw new Error("This browser cannot decompress XLSX files. Use Chrome/Edge or enter the snapshot manually.");
+   const ds=new DecompressionStream("deflate-raw"),stream=new Blob([compressed]).stream().pipeThrough(ds);return new Uint8Array(await new Response(stream).arrayBuffer());
+  }
+  throw new Error("Unsupported XLSX compression method "+e.method);
+ }
+ return {entries,read};
+}
+function xmlText(u8){return new TextDecoder("utf-8").decode(u8)}
+async function parseXlsx(file){
+ const zip=await unzip(await file.arrayBuffer()),parser=new DOMParser();
+ const wbBytes=await zip.read("xl/workbook.xml"),relBytes=await zip.read("xl/_rels/workbook.xml.rels");
+ if(!wbBytes||!relBytes)throw new Error("Workbook structure not found.");
+ const wbxml=parser.parseFromString(xmlText(wbBytes),"application/xml"),rels=parser.parseFromString(xmlText(relBytes),"application/xml");
+ const relMap={};[...rels.getElementsByTagName("Relationship")].forEach(r=>relMap[r.getAttribute("Id")]=r.getAttribute("Target"));
+ const sheets={};[...wbxml.getElementsByTagName("sheet")].forEach(sh=>{const id=sh.getAttribute("r:id")||sh.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id");let target=relMap[id];if(target){target=target.replace(/^\/?/,"");if(!target.startsWith("xl/"))target="xl/"+target.replace(/^\.\//,"");sheets[sh.getAttribute("name")]=target}});
+ let shared=[];const ss=await zip.read("xl/sharedStrings.xml");if(ss){const x=parser.parseFromString(xmlText(ss),"application/xml");shared=[...x.getElementsByTagName("si")].map(si=>[...si.getElementsByTagName("t")].map(t=>t.textContent).join(""))}
+ async function sheetGrid(name){
+  const path=sheets[name];if(!path)throw new Error(`Sheet "${name}" not found.`);
+  const b=await zip.read(path);const x=parser.parseFromString(xmlText(b),"application/xml"),grid={};
+  [...x.getElementsByTagName("c")].forEach(c=>{
+   const ref=c.getAttribute("r"),t=c.getAttribute("t");let val=null;
+   if(t==="inlineStr")val=[...c.getElementsByTagName("t")].map(z=>z.textContent).join("");
+   else{const v=c.getElementsByTagName("v")[0];if(!v)return;const raw=v.textContent;if(t==="s")val=shared[Number(raw)]??raw;else if(t==="str")val=raw;else{const q=Number(raw);val=Number.isFinite(q)?q:raw}}
+   grid[ref]=val;
+  });return grid;
+ }
+ const pl=await sheetGrid("Profit and Loss"),bs=await sheetGrid("Balance Sheet");
+ const colNum=ref=>{const m=ref.match(/[A-Z]+/i)[0].toUpperCase();let x=0;for(const ch of m)x=x*26+ch.charCodeAt(0)-64;return x};
+ const rowNum=ref=>Number(ref.match(/\d+/)[0]);
+ function entries(g){return Object.entries(g)}
+ function cleanLabel(v){return String(v??"").toLowerCase().replace(/^\s*\d+\s*-\s*/,"").replace(/[\'"]/g,"").trim()}
+ function findVal(g,label){
+  const target=cleanLabel(label);
+  const hit=entries(g).find(([r,v])=>cleanLabel(v)===target);if(!hit)return 0;
+  const [ref]=hit,row=rowNum(ref),col=colNum(ref);let found=null;
+  for(let c=col+1;c<=col+5;c++){const letters=(n=>{let s="";while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)}return s})(c),v=g[letters+row];if(typeof v==="number")found=v}
+  return found===null?0:found;
+ }
+ function sumCash(g){
+  let sum=0;for(const [ref,v] of entries(g)){if(typeof v!=="string")continue;const txt=v.toLowerCase();if(txt.includes("revolut ")||txt.includes("sleek business account")){const row=rowNum(ref),col=colNum(ref);let found=null;for(let c=col+1;c<=col+5;c++){const letters=(n=>{let s="";while(n){n--;s=String.fromCharCode(65+n%26)+s;n=Math.floor(n/26)}return s})(c),x=g[letters+row];if(typeof x==="number")found=x}if(found!==null)sum+=found}}return sum;
+ }
+ let monthEnd="";
+ for(const [,v] of [...entries(bs),...entries(pl)])if(typeof v==="string"){
+  const m=v.match(/(?:As at|year ended)\s+(\d{1,2}\s+[A-Za-z]+\s+\d{4})/i);if(m){const d=new Date(m[1]);if(!isNaN(d)){monthEnd=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;break}}
+ }
+ if(!monthEnd)throw new Error("Could not determine the management-account month end.");
+ return {
+  monthEnd,sales:findVal(pl,"Sales"),expenses:findVal(pl,"Total Expense (Debit)"),wages:findVal(pl,"Wages and salaries"),profit:findVal(pl,"Profit for the year"),
+  cash:sumCash(bs),ar:findVal(bs,"Accounts Receivable"),ap:findVal(bs,"Accounts Payable"),dueFrom:findVal(bs,"Amount Due from Shareholder/Director (current)"),
+  dueTo:findVal(bs,"Amount Due to Shareholder/Director (current)"),dividendsYTD:Math.abs(findVal(bs,"Dividends paid")),retainedEarnings:findVal(bs,"Retained Earnings"),
+  incomeTaxPayable:findVal(bs,"Income Tax Payable"),currentYearEarnings:(findVal(bs,"Current Year Earnings")||findVal(bs,"Provisional Profit / Loss (Credit)")),taxAdjustments:0,currentTaxPaid:0,source:file.name
+ };
+}
+document.getElementById("xlsxInput").addEventListener("change",async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  let x=await parseXlsx(file);
+  const prior=[...state.actuals].filter(a=>a.monthEnd<x.monthEnd).sort((a,b)=>b.monthEnd.localeCompare(a.monthEnd))[0];
+  if(prior && n(x.currentYearEarnings)>0 && Math.abs(n(x.currentYearEarnings)-n(x.profit))>1){
+    const monthlySales=n(x.sales),monthlyWages=n(x.wages);
+    x.sales=n(prior.sales)+monthlySales;
+    x.wages=n(prior.wages)+monthlyWages;
+    x.profit=n(x.currentYearEarnings);
+    x.expenses=Math.max(0,x.sales-x.profit);
+    x.source=file.name+" — monthly P&L converted to cumulative using prior snapshot; profit tied to balance-sheet current-year earnings";
+  }else if(n(x.currentYearEarnings)>0){
+    x.profit=n(x.currentYearEarnings);
+    x.expenses=Math.max(0,n(x.sales)-n(x.profit));
+  }
+  delete x.currentYearEarnings;
+  pendingXlsx=x;
+  document.getElementById("importPreview").innerHTML=`<div class="notice"><b>${esc(file.name)}</b> parsed locally.</div><div class="breakdown" style="margin-top:15px">
+   <div class="k">Month end</div><div class="v">${fmtDate(x.monthEnd)}</div><div class="k">Sales YTD</div><div class="v">${fmtUSD(x.sales,2)}</div>
+   <div class="k">Expenses YTD</div><div class="v">${fmtUSD(x.expenses,2)}</div><div class="k">Wages YTD</div><div class="v">${fmtUSD(x.wages,2)}</div>
+   <div class="k">Profit YTD</div><div class="v">${fmtUSD(x.profit,2)}</div><div class="k">Cash</div><div class="v">${fmtUSD(x.cash,2)}</div>
+   <div class="k">A/R</div><div class="v">${fmtUSD(x.ar,2)}</div><div class="k">A/P</div><div class="v">${fmtUSD(x.ap,2)}</div>
+   <div class="k">Dividends paid YTD</div><div class="v">${fmtUSD(x.dividendsYTD,2)}</div><div class="k">Retained earnings</div><div class="v">${fmtUSD(x.retainedEarnings,2)}</div>
+  </div><div class="notice warn" style="margin-top:15px">Tax adjustments default to zero on import. Enter any accountant tax-computation adjustments later if required.</div>`;
+  document.getElementById("importPreviewModal").classList.remove("hidden");
+ }catch(err){alert("Could not read this XLSX: "+err.message+" You can still enter the snapshot manually.")}
+ e.target.value="";
+});
+document.getElementById("confirmXlsxImport").addEventListener("click",()=>{
+ if(!pendingXlsx)return;const i=state.actuals.findIndex(a=>a.monthEnd===pendingXlsx.monthEnd);if(i>=0)state.actuals[i]=pendingXlsx;else state.actuals.push(pendingXlsx);
+ state.settings.selectedMonthEnd=pendingXlsx.monthEnd;pendingXlsx=null;document.getElementById("importPreviewModal").classList.add("hidden");renderAll();showPage("dashboard");
+});
+
+renderAll();
+appReady=true;
+updateCloudUI();
+initGoogle();
+setInterval(pollCloud,60000);
+</script>
+</body>
+</html>

@@ -72,6 +72,27 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
 .sync-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:12px}
 .sync-detail{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}
 
+
+/* ===== Monthly Control Centre ===== */
+.control-hero{background:linear-gradient(135deg,#f7fbff,#fff);border:1px solid #cfe2f3;border-radius:16px;padding:18px;margin-bottom:18px}
+.control-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:14px}
+.control-head h2{margin:0 0 5px;font-size:26px}.control-head p{margin:0;color:var(--muted)}
+.control-month{min-width:170px}
+.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.quick-card{background:#fff;border:1px solid var(--border);border-radius:13px;padding:15px}
+.quick-card h3{margin:0 0 4px;font-size:16px}.quick-card .hint{font-size:12px;color:var(--muted);margin-bottom:12px}
+.quick-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.quick-form .span2{grid-column:1/-1}
+.quick-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.quick-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:11px 0}
+.quick-stat{background:#f6f9fb;border-radius:10px;padding:10px}.quick-stat .k{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:750}.quick-stat .v{font-size:19px;font-weight:800;margin-top:3px}
+.quick-stat.good{background:var(--greenbg)}.quick-stat.good .v{color:var(--green)}
+.doc-list{display:flex;flex-direction:column;gap:7px;margin-top:10px}.doc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--border);border-radius:9px;padding:9px 10px;font-size:12px}.doc-row .doc-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:650}.doc-row .doc-meta{color:var(--muted);font-size:10px}
+.checklist{display:flex;gap:7px;flex-wrap:wrap}.check-item{border-radius:999px;padding:6px 9px;font-size:11px;font-weight:700;background:#eef2f5;color:#66788a}.check-item.done{background:var(--greenbg);color:var(--green)}.check-item.wait{background:var(--amberbg);color:var(--amber)}
+.detail-divider{display:flex;align-items:center;gap:12px;margin:25px 0 16px;color:var(--muted);font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.05em}.detail-divider:before,.detail-divider:after{content:"";height:1px;background:var(--border);flex:1}
+.upload-label{display:inline-flex;align-items:center;gap:6px}
+@media(max-width:760px){.control-hero{padding:13px;margin:-2px -2px 14px}.control-head{display:grid;grid-template-columns:minmax(0,1fr) auto}.control-head h2{font-size:23px}.control-month{min-width:0;width:124px}.quick-grid{grid-template-columns:1fr;gap:10px}.quick-form{grid-template-columns:1fr}.quick-form .span2{grid-column:1}.quick-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.quick-summary .quick-stat:first-child{grid-column:1/-1}.quick-actions .btn,.quick-actions .upload-label{flex:1;text-align:center;justify-content:center}.doc-row{align-items:flex-start;flex-direction:column}.doc-row .quick-actions{width:100%;margin-top:3px}}
+
 /* ===== Mobile UX v2 ===== */
 .mobile-bottom-nav{display:none}
 @media(max-width:760px){
@@ -270,7 +291,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
 <aside class="sidebar" id="sidebar">
   <div class="brand"><h1>MOG Finance</h1><small>Consulting & Exploration Pte. Ltd.</small></div>
   <nav>
-    <button class="navbtn active" data-page="dashboard"><span class="icon">▦</span>Dashboard</button>
+    <button class="navbtn active" data-page="dashboard"><span class="icon">⌂</span>Monthly Control</button>
     <button class="navbtn" data-page="monthly"><span class="icon">▤</span>Monthly Operations</button>
     <button class="navbtn" data-page="accountant"><span class="icon">▥</span>Sleek Accounts</button>
     <button class="navbtn" data-page="dividends"><span class="icon">◈</span>Dividends</button>
@@ -283,20 +304,81 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
 
 <main class="main">
 <header class="topbar">
-  <div style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" id="mobileMenu">☰</button><h2 id="topTitle">Dashboard</h2></div>
+  <div style="display:flex;align-items:center;gap:10px"><button class="mobile-menu" id="mobileMenu">☰</button><h2 id="topTitle">Monthly Control</h2></div>
   <div class="top-actions"><span class="cloud-pill" id="cloudPill">Drive not connected</span><button class="btn small" id="googleSignInBtn">Connect Google Drive</button><span class="status-pill" id="monthPill">No month</span><button class="btn small" onclick="window.print()">Print</button></div>
 </header>
 <div class="content">
 
 <section class="page active" id="page-dashboard">
+  <div class="control-hero">
+    <div class="control-head">
+      <div><h2>Monthly Control Centre</h2><p>Enter the month, archive the supporting documents and manage the dividend from one screen.</p></div>
+      <select id="controlMonth" class="btn control-month" aria-label="Control month"></select>
+    </div>
+    <div id="homeMonthStatus" class="checklist"></div>
+
+    <div class="quick-grid">
+      <div class="quick-card">
+        <h3>Monthly income &amp; costs</h3><div class="hint">Actual cash/payroll inputs for the selected month. Forecast values remain available in Monthly Operations.</div>
+        <div class="quick-form">
+          <div class="field"><label>Revenue / income — US$</label><input id="homeRevenue" type="number" step="0.01"></div>
+          <div class="field"><label>Actual non-wage expenses — US$</label><input id="homeOpex" type="number" step="0.01"></div>
+          <div class="field"><label>Salary accounting expense — S$</label><input id="homeSalarySGD" type="number" step="0.01"></div>
+          <div class="field"><label>Salary actually paid — US$</label><input id="homeSalaryUSD" type="number" step="0.01"></div>
+          <div class="field span2"><label>Salary payment date</label><input id="homeSalaryDate" type="date"></div>
+        </div>
+        <div class="quick-actions"><button class="btn primary" id="saveHomeMonthBtn">Save month</button><span class="small muted" id="homeMonthSaveStatus"></span></div>
+      </div>
+
+      <div class="quick-card">
+        <h3>Bank position</h3><div class="hint">Used in the cash side of the safe-dividend calculation.</div>
+        <div class="quick-form">
+          <div class="field"><label>Bank snapshot date</label><input id="homeBankDate" type="date"></div>
+          <div class="field"><label>FX — S$ per US$</label><input id="homeBankFX" type="number" step="0.001"></div>
+          <div class="field"><label>Revolut USD</label><input id="homeRevolutUSD" type="number" step="0.01"></div>
+          <div class="field"><label>Revolut SGD</label><input id="homeRevolutSGD" type="number" step="0.01"></div>
+          <div class="field"><label>Sleek USD</label><input id="homeSleekUSD" type="number" step="0.01"></div>
+          <div class="field"><label>Sleek SGD</label><input id="homeSleekSGD" type="number" step="0.01"></div>
+          <div class="field"><label>Current A/R — US$</label><input id="homeAR" type="number" step="0.01"></div>
+          <div class="field"><label>Current A/P — US$</label><input id="homeAP" type="number" step="0.01"></div>
+          <div class="field span2"><label>Due to shareholder — US$</label><input id="homeDueTo" type="number" step="0.01"></div>
+        </div>
+        <div class="quick-actions"><button class="btn primary" id="saveHomeBankBtn">Save bank position</button><span class="small muted" id="homeBankSaveStatus"></span></div>
+      </div>
+
+      <div class="quick-card">
+        <h3>Monthly documents</h3><div class="hint">Files are archived privately in MOG Finance's Google Drive app-data vault and indexed by month here.</div>
+        <div class="quick-actions">
+          <label class="btn upload-label" for="homeBankStatementInput">Upload bank statement</label><input id="homeBankStatementInput" class="hidden" type="file" multiple accept=".pdf,.csv,.xlsx,.xls,image/*">
+          <label class="btn upload-label" for="homeManagementInput">Upload management accounts</label><input id="homeManagementInput" class="hidden" type="file" accept=".xlsx,.pdf">
+        </div>
+        <div id="homeDocumentStatus" class="small muted" style="margin-top:9px"></div>
+        <div id="homeDocumentList" class="doc-list"></div>
+      </div>
+
+      <div class="quick-card">
+        <h3>Dividend action</h3><div class="hint">The recommendation is based on the latest confirmed management accounts and current bank position. Nothing is declared automatically.</div>
+        <div class="quick-summary">
+          <div class="quick-stat good"><div class="k">Safe available</div><div class="v" id="homeSafeDividend">—</div></div>
+          <div class="quick-stat"><div class="k">Recommended request</div><div class="v" id="homeRecommendedDividend">—</div></div>
+          <div class="quick-stat"><div class="k">Pending request</div><div class="v" id="homePendingDividend">—</div></div>
+        </div>
+        <div class="field"><label>Dividend request — US$</label><input id="homeDividendAmount" type="number" min="0" step="1000"></div>
+        <div class="quick-actions"><button class="btn primary" id="homeCreateRequestBtn">Create request</button><button class="btn green hidden" id="homeDeclarePendingBtn">Declare &amp; pay today</button></div>
+        <div id="homeDividendNote" class="small muted" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-divider">Detailed finance overview</div>
   <div class="page-head"><div><h2>Finance Dashboard</h2><p>Tax reserves, cash position and safe dividend capacity.</p></div><div class="toolbar"><select id="dashboardMonth" class="btn"></select></div></div>
   <div class="grid grid-4" id="dashboardTop"></div>
 
   <div class="section-title"><h3>Dividend decision</h3><small>Lower of distributable-profit capacity and cash capacity</small></div>
   <div class="grid grid-3">
     <div class="card metric highlight"><div class="label">SAFE DIVIDEND BEFORE CURRENT REQUEST</div><div class="value" id="safeDividend">—</div><div class="sub" id="safeDividendSub"></div></div>
-    <div class="card metric"><div class="label">CURRENT DIVIDEND REQUEST</div><div class="value" id="potentialDividend">—</div><div class="sub">Requested 07-Sep-2026; pending corpsec voucher and cash payment.</div></div>
-    <div class="card metric"><div class="label">REMAINING SAFE CAPACITY AFTER REQUEST</div><div class="value" id="minCashRetain">—</div><div class="sub">Additional headroom remaining after reserving the current US$22,000 request.</div></div>
+    <div class="card metric"><div class="label">CURRENT DIVIDEND REQUEST</div><div class="value" id="potentialDividend">—</div><div class="sub" id="pendingDividendSub">No pending request.</div></div>
+    <div class="card metric"><div class="label">REMAINING SAFE CAPACITY AFTER REQUEST</div><div class="value" id="minCashRetain">—</div><div class="sub" id="remainingCapacitySub">Additional headroom after pending requests.</div></div>
   </div>
 
   <div class="grid grid-2" style="margin-top:16px">
@@ -327,7 +409,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
 <section class="page" id="page-monthly">
   <div class="page-head"><div><h2>Monthly Operations</h2><p>Work days, contract revenue and salary. Recorded revenue overrides the expected formula.</p></div><button class="btn primary" id="addMonthBtn">+ Add month</button></div>
   <div class="table-wrap"><table><thead><tr>
-    <th>Period</th><th>Days</th><th>Rate USD</th><th>Service USD</th><th>Expected Revenue</th><th>Recorded Revenue</th><th>Revenue Used</th><th>Salary S$</th><th>Salary USD</th><th>Other Opex Forecast</th><th>Notes</th><th></th>
+    <th>Period</th><th>Days</th><th>Rate USD</th><th>Service USD</th><th>Expected Revenue</th><th>Recorded Revenue</th><th>Revenue Used</th><th>Salary S$</th><th>Salary Paid US$</th><th>Salary Paid Date</th><th>Actual Opex US$</th><th>Forecast Opex US$</th><th>Notes</th><th></th>
   </tr></thead><tbody id="monthlyBody"></tbody></table></div>
 </section>
 
@@ -335,21 +417,21 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
   <div class="page-head"><div><h2>Sleek Management Accounts</h2><p>One cumulative month-end snapshot. Import the monthly Sleek .xlsx or enter the figures manually.</p></div>
     <div class="toolbar"><label class="btn primary" for="xlsxInput">Import Sleek .xlsx</label><input id="xlsxInput" class="hidden" type="file" accept=".xlsx"><button class="btn" id="newActualBtn">+ Manual snapshot</button></div>
   </div>
-  <div class="notice" style="margin-bottom:14px">The XLSX importer reads the <b>Profit and Loss</b> and <b>Balance Sheet</b> sheets locally in your browser. The workbook itself is not uploaded; only the resulting finance data is saved to your private Google Drive app-data file when sync is connected.</div>
+  <div class="notice" style="margin-bottom:14px">The XLSX importer reads the <b>Profit and Loss</b> and <b>Balance Sheet</b> sheets locally in your browser. For a monthly archive as well, upload the workbook from <b>Monthly Control</b>; it will be stored privately in the MOG Finance Google Drive document vault and can also be imported here.</div>
   <div class="table-wrap"><table><thead><tr>
     <th>Month end</th><th>Sales YTD</th><th>Expense YTD</th><th>Wages YTD</th><th>Profit YTD</th><th>Cash</th><th>A/R</th><th>A/P</th><th>Dividends YTD</th><th>Tax adj.</th><th>Source</th><th></th>
   </tr></thead><tbody id="actualsBody"></tbody></table></div>
 </section>
 
 <section class="page" id="page-dividends">
-  <div class="page-head"><div><h2>Dividend Register</h2><p>Document declarations and cash payments, including withdrawals later reclassified as dividends.</p></div><button class="btn primary" id="newDividendBtn">+ Add dividend</button></div>
+  <div class="page-head"><div><h2>Dividend Register</h2><p>Create a request from the calculated safe limit. When you declare a request, MOG Finance treats it as paid and complete on that same date.</p></div><button class="btn primary" id="newDividendBtn">+ Create request</button></div>
   <div class="grid grid-3" style="margin-bottom:16px">
     <div class="card metric"><div class="label">Declared dividends through selected month</div><div class="value" id="registeredDivs">—</div></div>
     <div class="card metric"><div class="label">Accountant dividends YTD</div><div class="value" id="accountantDivs">—</div></div>
     <div class="card metric" id="divReconCard"><div class="label">Reconciliation difference</div><div class="value" id="divRecon">—</div></div>
   </div>
   <div class="table-wrap"><table><thead><tr>
-    <th>Period</th><th>Declaration</th><th>Cash date</th><th>USD</th><th>FX</th><th>S$ equivalent</th><th>Status</th><th>Documentation</th><th>Sleek ref.</th><th>Handling / Notes</th><th></th>
+    <th>Period</th><th>Request date</th><th>Declaration</th><th>Cash date</th><th>USD</th><th>FX</th><th>S$ equivalent</th><th>Status</th><th>Documentation</th><th>Sleek ref.</th><th>Handling / Notes</th><th></th>
   </tr></thead><tbody id="dividendBody"></tbody></table></div>
 </section>
 
@@ -365,7 +447,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
   <div class="card">
     <div class="settings-group"><h3>Current contract & currency</h3><div class="settings-grid" id="settingsContract"></div></div>
     <div class="settings-group"><h3>Tax & reserves</h3><div class="settings-grid" id="settingsTax"></div></div>
-    <div class="settings-group"><h3>NES comparison</h3><div class="settings-grid" id="settingsNES"></div></div>
+    <div class="settings-group"><h3>NES comparison</h3><div class="notice" style="margin-bottom:12px">Comparison uses one OPEX assumption only: <b>Forecast monthly non-wage OPEX</b> above (currently US$400/month). Actual work days are calculated from the 26-day baseline less annual leave and public holidays not worked.</div><div class="settings-grid" id="settingsNES"></div></div>
     <div class="settings-group"><h3>Tax references</h3>
       <div class="notice">Individual tax rates: <a class="source-link" target="_blank" href="https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-residency-and-tax-rates/individual-income-tax-rates">IRAS resident individual rates</a><br>
       Corporate tax / exemptions: <a class="source-link" target="_blank" href="https://www.iras.gov.sg/taxes/corporate-income-tax/basics-of-corporate-income-tax/corporate-income-tax-rate-rebates-and-tax-exemption-schemes">IRAS corporate tax and exemption schemes</a></div>
@@ -377,7 +459,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
   <div class="page-head"><div><h2>Backup & Data</h2><p>Google Drive is the master copy. This browser also keeps a local cache for resilience.</p></div></div>
   <div class="grid grid-2">
     <div class="card"><h3 style="margin-top:0">Google Drive sync</h3><p class="muted">The finance data file is stored privately in Google Drive's hidden app-data area. It is not stored in this public GitHub repository.</p><div id="cloudDetails" class="notice">Not connected.</div><div class="sync-row"><button class="btn primary" id="cloudConnectBtn">Connect Google Drive</button><button class="btn" id="cloudSaveNowBtn">Save now</button><button class="btn" id="cloudReloadBtn">Reload cloud copy</button><button class="btn danger" id="googleSignOutBtn">Disconnect</button></div><div class="sync-detail">Use the same Google account on Mac and phone. If another device changes the cloud copy while this device has unsaved edits, the app stops before overwriting it.</div></div>
-    <div class="card"><h3 style="margin-top:0">Backup / migration</h3><p class="muted">To move your current V3.1 data online, export a JSON backup from the old app, then import it here after connecting Google Drive.</p><div class="toolbar"><button class="btn primary" id="exportBackupBtn">Download backup</button><label class="btn" for="importBackupInput">Import backup</label><input id="importBackupInput" class="hidden" type="file" accept=".json"></div></div>
+    <div class="card"><h3 style="margin-top:0">Backup / migration</h3><p class="muted">Download a JSON backup whenever you want an offline copy of the complete finance data and document index.</p><div class="toolbar"><button class="btn primary" id="exportBackupBtn">Download backup</button><label class="btn" for="importBackupInput">Import backup</label><input id="importBackupInput" class="hidden" type="file" accept=".json"></div></div>
     <div class="card"><h3 style="margin-top:0">Exports</h3><p class="muted">Export a simple CSV summary for your records or accountant.</p><button class="btn" id="exportSummaryBtn">Download summary CSV</button></div>
     <div class="card"><h3 style="margin-top:0">Local cache</h3><div id="storageInfo" class="notice"></div><div class="hr"></div><p class="muted">Reset only this browser's working data. If connected, the blank state will also sync to Drive after confirmation.</p><button class="btn danger" id="resetBtn">Reset to blank app</button></div>
   </div>
@@ -405,23 +487,36 @@ const GOOGLE_CLIENT_ID="1087290113731-kr73169jjht9jeah8lfnf5m4kau3tgjt.apps.goog
 const DRIVE_SCOPE="https://www.googleapis.com/auth/drive.appdata";
 const DRIVE_FILE_NAME="mog-finance-data.json";
 const EMPTY_STATE={
- version:4,
+ version:5,
  settings:{
   fx:1,selectedMonthEnd:"",fyStart:"",fyEnd:"",personalStart:"",personalEnd:"",mogDayRate:0,serviceFee:0,
-  monthlySalarySGD:0,companyTaxReservePct:0.15,operatingBufferUSD:0,forecastMonthlyOpexUSD:0,
+  monthlySalarySGD:0,companyTaxReservePct:0.15,operatingBufferUSD:0,forecastMonthlyOpexUSD:400,controlMonth:"",
   currentFYTaxPaidUSD:0,corpRebatePct:0,corpRebateCapSGD:0,suteEligible:true,
   personalTaxPaidSGD:0,personalReliefsSGD:0,nesWithholdingRate:0,nesDayRate:0,nesAllowance:0,
-  nesLeaveDays:0,nesPublicHolidays:0,comparisonWorkDays:0,comparisonMOGOpexSGD:0
+  nesLeaveDays:14,nesPublicHolidays:11,nesPublicHolidaysWorked:9,comparisonWorkDaysPerMonth:26,comparisonLeaveTaken:20,comparisonWorkDays:0,comparisonMOGOpexSGD:0
  },
- monthly:[],actuals:[],dividends:[],currentBank:null,proposedDividend:0
+ monthly:[],actuals:[],dividends:[],documents:[],currentBank:null,proposedDividend:0
 };
 let state=loadState();
 let editingActual=null,editingDividend=null,pendingXlsx=null;
 
 function clone(x){return JSON.parse(JSON.stringify(x))}
+function ensureStateDefaults(p){
+ if(!p||!p.settings)return p;
+ if(!Array.isArray(p.monthly))p.monthly=[];if(!Array.isArray(p.actuals))p.actuals=[];if(!Array.isArray(p.dividends))p.dividends=[];if(!Array.isArray(p.documents))p.documents=[];
+ const oldVersion=n(p.version,1);
+ const d=EMPTY_STATE.settings;for(const [k,v] of Object.entries(d))if(p.settings[k]===undefined)p.settings[k]=v;
+ if(oldVersion<5){
+  p.settings.forecastMonthlyOpexUSD=400;
+  p.settings.comparisonWorkDaysPerMonth=26;p.settings.comparisonLeaveTaken=20;p.settings.nesLeaveDays=14;p.settings.nesPublicHolidays=11;p.settings.nesPublicHolidaysWorked=9;
+  p.monthly.forEach(r=>{if(r.opexForecast!==null&&r.opexForecast!==undefined&&Math.abs(Number(r.opexForecast)-872.86)<.02)r.opexForecast=null;});
+ }
+ if(!p.settings.controlMonth){const now=localISODate().slice(0,7),keys=p.monthly.map(r=>String(r.period||"").slice(0,7));p.settings.controlMonth=keys.includes(now)?now:(keys.sort().reverse()[0]||now)}
+ p.version=5;return p;
+}
 function loadState(){
- try{const v=localStorage.getItem(APP_KEY);if(v){const p=JSON.parse(v);if(p&&p.settings&&p.monthly&&p.actuals&&p.dividends)return p}}catch(e){}
- return clone(EMPTY_STATE);
+ try{const v=localStorage.getItem(APP_KEY);if(v){const p=JSON.parse(v);if(p&&p.settings&&p.monthly&&p.actuals&&p.dividends)return ensureStateDefaults(p)}}catch(e){}
+ return ensureStateDefaults(clone(EMPTY_STATE));
 }
 let tokenClient=null,accessToken="",tokenExpiresAt=0,driveFileId="",cloudBaselineModifiedTime="",cloudSaveTimer=null,cloudDirty=false,cloudBusy=false,cloudConflict=false,suppressCloudSave=false,appReady=false;
 function saveState(){
@@ -433,7 +528,7 @@ function saveState(){
 }
 function n(v,d=0){const x=Number(v);return Number.isFinite(x)?x:d}
 function maybeNum(v){if(v===""||v===null||v===undefined)return null;const x=Number(v);return Number.isFinite(x)?x:null}
-function fmtUSD(v,dec=0){return new Intl.NumberFormat("en-SG",{style:"currency",currency:"USD",currencyDisplay:"narrowSymbol",maximumFractionDigits:dec,minimumFractionDigits:dec}).format(n(v))}
+function fmtUSD(v,dec=0){const x=n(v),a=Math.abs(x);const num=new Intl.NumberFormat("en-SG",{style:"decimal",maximumFractionDigits:dec,minimumFractionDigits:dec}).format(a);return `${x<0?"-":""}US$${num}`}
 function fmtSGD(v,dec=0){
  const x=n(v),a=Math.abs(x);
  const num=new Intl.NumberFormat("en-SG",{style:"decimal",maximumFractionDigits:dec,minimumFractionDigits:dec}).format(a);
@@ -441,6 +536,8 @@ function fmtSGD(v,dec=0){
 }
 function fmtPct(v,dec=1){return (n(v)*100).toFixed(dec)+"%"}
 function fmtDate(s){if(!s)return"—";const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})}
+function localISODate(){const d=new Date();const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${day}`}
+function dividendPeriodFromDate(s){if(!s)return"";const [y,m]=s.split("-").map(Number);return `${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]}-${String(y).slice(-2)}`}
 function fmtMonth(s){if(!s)return"—";const [y,m]=s.split("-").map(Number);return new Date(y,m-1,1).toLocaleDateString("en-GB",{month:"short",year:"numeric"})}
 function dateVal(s){return s||""}
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]))}
@@ -468,7 +565,7 @@ function corpTaxSGD(taxable){
 }
 function revenueUsed(row){const rec=maybeNum(row.recordedRevenue);return rec!==null?rec:n(row.days)*n(row.rate)+n(row.service)}
 function salaryUSD(row){const val=maybeNum(row.salaryUSD);return val!==null?val:n(row.salarySGD)/Math.max(n(state.settings.fx),.0001)}
-function rowOpex(row){const val=maybeNum(row.opexForecast);return val!==null?val:n(state.settings.forecastMonthlyOpexUSD)}
+function rowOpex(row){const actual=maybeNum(row.actualOpexUSD);if(actual!==null)return actual;const val=maybeNum(row.opexForecast);return val!==null?val:n(state.settings.forecastMonthlyOpexUSD)}
 function latestActual(){
  if(!state.actuals.length)return null;
  let target=state.settings.selectedMonthEnd;
@@ -476,6 +573,14 @@ function latestActual(){
 }
 function dividendsThrough(date){
  return state.dividends.filter(d=>d.declarationDate && dateVal(d.declarationDate)<=date).reduce((s,d)=>s+n(d.amountUSD),0);
+}
+function declaredDividendsCurrentFY(){
+ const start=dateVal(state.settings.fyStart),end=dateVal(state.settings.fyEnd);
+ return state.dividends.filter(d=>d.declarationDate&&(!start||d.declarationDate>=start)&&(!end||d.declarationDate<=end)).reduce((z,d)=>z+n(d.amountUSD),0);
+}
+function postSnapshotPaidDividendsUSD(){
+ const b=state.currentBank;if(!b||!b.snapshotDate)return 0;
+ return state.dividends.filter(d=>d.cashDate&&d.cashDate>b.snapshotDate).reduce((z,d)=>z+n(d.amountUSD),0);
 }
 function currentBankCashUSD(){
  const b=state.currentBank;if(!b)return null;
@@ -499,11 +604,13 @@ function calc(){
  const taxPaid=Math.max(n(s.currentFYTaxPaidUSD),n(a.currentTaxPaid));
  const companyTaxReserve=Math.max(0,n(a.profit)*n(s.companyTaxReservePct)-taxPaid);
  const regDivs=dividendsThrough(selected);
- const usedDivs=Math.max(regDivs,n(a.dividendsYTD));
+ const declaredFY=declaredDividendsCurrentFY();
+ const usedDivs=Math.max(declaredFY,n(a.dividendsYTD));
  const pendingRequests=state.dividends.filter(d=>String(d.status||"").toLowerCase().startsWith("requested")).reduce((z,d)=>z+n(d.amountUSD),0);
  const remainingDistributable=Math.max(0,n(a.profit)-usedDivs-companyTaxReserve);
  const useLive=state.currentBank && state.currentBank.snapshotDate>=selected;
- const currentCash=useLive?currentBankCashUSD():n(a.cash);
+ const postSnapshotDividends=useLive?postSnapshotPaidDividendsUSD():0;
+ const currentCash=Math.max(0,(useLive?currentBankCashUSD():n(a.cash))-postSnapshotDividends);
  const currentAR=useLive?n(state.currentBank.currentAR):n(a.ar);
  const currentAP=useLive?n(state.currentBank.currentAP):n(a.ap);
  const currentDueTo=useLive?n(state.currentBank.currentDueTo):n(a.dueTo);
@@ -522,7 +629,9 @@ function calc(){
  const fyTaxReserveUSD=Math.max(0,fyPBT)*n(s.companyTaxReservePct);
  const forecastRevenue=n(a.sales)+remRevenue;
 
- const work=n(s.comparisonWorkDays);
+ const baseWorkDays=Math.max(0,n(s.comparisonWorkDaysPerMonth,26)*12);
+ const phNotWorked=Math.max(0,n(s.nesPublicHolidays,11)-n(s.nesPublicHolidaysWorked,9));
+ const work=Math.max(0,baseWorkDays-n(s.comparisonLeaveTaken,20)-phNotWorked);
  const nesGrossUSD=work*n(s.nesDayRate)+12*n(s.nesAllowance)+n(s.nesLeaveDays)*n(s.nesDayRate)+n(s.nesPublicHolidays)*n(s.nesDayRate);
  const nesGrossSGD=nesGrossUSD*fx;
  const nesTax=residentTax(nesGrossSGD);
@@ -531,7 +640,8 @@ function calc(){
  const mogGrossUSD=work*n(s.mogDayRate)+12*n(s.serviceFee);
  const mogGrossSGD=mogGrossUSD*fx;
  const mogSalary=12*n(s.monthlySalarySGD);
- const mogPBT=Math.max(0,mogGrossSGD-mogSalary-n(s.comparisonMOGOpexSGD));
+ const mogComparisonOpexSGD=12*n(s.forecastMonthlyOpexUSD)*fx;
+ const mogPBT=Math.max(0,mogGrossSGD-mogSalary-mogComparisonOpexSGD);
  const mogCorpTax=corpTaxSGD(mogPBT);
  const mogCompanyAfter=mogPBT-mogCorpTax;
  const mogPersonalTax=residentTax(Math.max(0,mogSalary-n(s.personalReliefsSGD)));
@@ -540,15 +650,49 @@ function calc(){
  const advantage=mogValue-nesNet;
 
  return {a,selected,fx,salYTD,salAnnual,personalYTD,personalForecast,personalOutstandingYTD,personalReserve,
-  taxableSGD,companyTax,companyTaxUSD,taxPaid,companyTaxReserve,regDivs,usedDivs,
-  remainingDistributable,minCash,cashCapacity,safe:safeBefore,safeBefore,safeAfterPending,pendingRequests,currentCash,currentAR,afterAR,remRevenue,remSalary,remOpex,fyPBT,fyTax,fyTaxReserveUSD,forecastRevenue,
-  nesGrossUSD,nesGrossSGD,nesTax,nesWithheld,nesNet,mogGrossUSD,mogGrossSGD,mogSalary,mogPBT,mogCorpTax,mogCompanyAfter,mogPersonalTax,mogPersonalNet,mogValue,advantage};
+  taxableSGD,companyTax,companyTaxUSD,taxPaid,companyTaxReserve,regDivs,declaredFY,usedDivs,
+  remainingDistributable,minCash,cashCapacity,safe:safeBefore,safeBefore,safeAfterPending,pendingRequests,currentCash,currentAR,postSnapshotDividends,afterAR,remRevenue,remSalary,remOpex,fyPBT,fyTax,fyTaxReserveUSD,forecastRevenue,
+  baseWorkDays,phNotWorked,work,mogComparisonOpexSGD,nesGrossUSD,nesGrossSGD,nesTax,nesWithheld,nesNet,mogGrossUSD,mogGrossSGD,mogSalary,mogPBT,mogCorpTax,mogCompanyAfter,mogPersonalTax,mogPersonalNet,mogValue,advantage};
 }
+
+function monthKeyFromPeriod(p){return String(p||"").slice(0,7)}
+function monthEndForKey(k){if(!/^\d{4}-\d{2}$/.test(k))return"";const [y,m]=k.split("-").map(Number);return `${y}-${String(m).padStart(2,"0")}-${String(new Date(y,m,0).getDate()).padStart(2,"0")}`}
+function monthRow(key,create=false){let r=state.monthly.find(x=>monthKeyFromPeriod(x.period)===key);if(!r&&create){r={period:key+"-01",days:26,rate:n(state.settings.mogDayRate),service:n(state.settings.serviceFee),recordedRevenue:null,salarySGD:n(state.settings.monthlySalarySGD),salaryUSD:null,salaryPaidDate:"",actualOpexUSD:null,opexForecast:null,notes:""};state.monthly.push(r)}return r}
+function docsForMonth(key,type=""){return (state.documents||[]).filter(d=>d.month===key&&(!type||d.type===type))}
+function latestPendingDividend(){return [...state.dividends].filter(d=>String(d.status||"").toLowerCase().startsWith("requested")).sort((a,b)=>String(b.requestDate||"").localeCompare(String(a.requestDate||"")))[0]||null}
+function renderHomeControl(c){
+ const sel=document.getElementById("controlMonth");if(!sel)return;
+ const keys=[...new Set(state.monthly.map(r=>monthKeyFromPeriod(r.period)).filter(Boolean))].sort().reverse();
+ const current=state.settings.controlMonth||keys[0]||localISODate().slice(0,7);if(!keys.includes(current))keys.unshift(current);
+ sel.innerHTML=keys.map(k=>`<option value="${k}" ${k===current?"selected":""}>${fmtMonth(k+"-01")}</option>`).join("");
+ const r=monthRow(current,false)||{};
+ const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v??""};
+ set("homeRevenue",r.recordedRevenue??"");set("homeOpex",r.actualOpexUSD??"");set("homeSalarySGD",r.salarySGD??state.settings.monthlySalarySGD);set("homeSalaryUSD",r.salaryUSD??"");set("homeSalaryDate",r.salaryPaidDate||"");
+ const b=state.currentBank||{};set("homeBankDate",b.snapshotDate||localISODate());set("homeBankFX",b.fx||state.settings.fx);set("homeRevolutUSD",b.revolutUSD??"");set("homeRevolutSGD",b.revolutSGD??"");set("homeSleekUSD",b.sleekUSD??"");set("homeSleekSGD",b.sleekSGD??"");set("homeAR",b.currentAR??"");set("homeAP",b.currentAP??"");set("homeDueTo",b.currentDueTo??"");
+ const pending=latestPendingDividend(),safe=Math.max(0,c.safeAfterPending),recommended=Math.max(0,Math.floor(safe/1000)*1000);
+ document.getElementById("homeSafeDividend").textContent=fmtUSD(safe);document.getElementById("homeRecommendedDividend").textContent=fmtUSD(recommended);document.getElementById("homePendingDividend").textContent=fmtUSD(pending?n(pending.amountUSD):0);
+ const amount=document.getElementById("homeDividendAmount");if(document.activeElement!==amount)amount.value=pending?"":(recommended||"");
+ const declare=document.getElementById("homeDeclarePendingBtn");declare.classList.toggle("hidden",!pending);declare.textContent=pending?`Declare & pay ${fmtUSD(pending.amountUSD)} today`:"Declare & pay today";
+ document.getElementById("homeCreateRequestBtn").disabled=safe<=0;
+ document.getElementById("homeDividendNote").textContent=pending?`Pending request from ${fmtDate(pending.requestDate)}. Declaring sets declaration date, payment date and completion to today.`:`Suggested request is rounded down to the nearest US$1,000 from the current safe amount.`;
+ renderHomeDocuments(current);
+ const actual=state.actuals.find(a=>String(a.monthEnd||"").slice(0,7)===current),bankDocs=docsForMonth(current,"bank"),mgmtDocs=docsForMonth(current,"management"),declared=state.dividends.some(d=>String(d.declarationDate||"").slice(0,7)===current);
+ const checks=[["Income",r.recordedRevenue!==null&&r.recordedRevenue!==undefined],["Expenses",r.actualOpexUSD!==null&&r.actualOpexUSD!==undefined],["Salary paid",!!r.salaryUSD&&!!r.salaryPaidDate],["Bank statement",bankDocs.length>0],["Management accounts",!!actual||mgmtDocs.length>0],["Dividend declared",declared]];
+ document.getElementById("homeMonthStatus").innerHTML=checks.map(([label,ok])=>`<span class="check-item ${ok?"done":"wait"}">${ok?"✓":"○"} ${label}</span>`).join("");
+}
+function renderHomeDocuments(key){
+ const docs=docsForMonth(key);const list=document.getElementById("homeDocumentList");if(!list)return;
+ if(!docs.length){list.innerHTML='<div class="notice">No documents archived for this month yet.</div>';return}
+ list.innerHTML=docs.slice().sort((a,b)=>String(b.uploadedAt||"").localeCompare(String(a.uploadedAt||""))).map(d=>`<div class="doc-row"><div style="min-width:0"><div class="doc-name">${d.type==="bank"?"Bank":"Management"}: ${esc(d.name)}</div><div class="doc-meta">Uploaded ${fmtDate(String(d.uploadedAt||"").slice(0,10))}</div></div><div class="quick-actions" style="margin:0"><button class="btn small" data-docopen="${esc(d.id)}">Download</button></div></div>`).join("");
+}
+function saveHomeMonth(){const key=state.settings.controlMonth,r=monthRow(key,true);r.recordedRevenue=maybeNum(document.getElementById("homeRevenue").value);r.actualOpexUSD=maybeNum(document.getElementById("homeOpex").value);r.salarySGD=maybeNum(document.getElementById("homeSalarySGD").value)??n(state.settings.monthlySalarySGD);r.salaryUSD=maybeNum(document.getElementById("homeSalaryUSD").value);r.salaryPaidDate=document.getElementById("homeSalaryDate").value||"";document.getElementById("homeMonthSaveStatus").textContent="Saved";renderAll()}
+function saveHomeBank(){const old=state.currentBank||{};state.currentBank={...old,snapshotDate:document.getElementById("homeBankDate").value||localISODate(),fx:n(document.getElementById("homeBankFX").value,state.settings.fx),revolutUSD:n(document.getElementById("homeRevolutUSD").value),revolutSGD:n(document.getElementById("homeRevolutSGD").value),sleekUSD:n(document.getElementById("homeSleekUSD").value),sleekSGD:n(document.getElementById("homeSleekSGD").value),currentAR:n(document.getElementById("homeAR").value),currentAP:n(document.getElementById("homeAP").value),currentDueTo:n(document.getElementById("homeDueTo").value)};document.getElementById("homeBankSaveStatus").textContent="Saved";renderAll()}
+function createHomeDividendRequest(){const c=calc(),amount=n(document.getElementById("homeDividendAmount").value),safe=Math.max(0,c.safeAfterPending);if(amount<=0){alert("Enter a dividend request amount.");return}if(amount>safe+.01){alert(`The request exceeds the current safe amount of ${fmtUSD(safe,2)}.`);return}const date=localISODate();state.dividends.push({id:"d"+Date.now(),period:dividendPeriodFromDate(date),requestDate:date,declarationDate:"",cashDate:"",amountUSD:amount,fx:n(state.settings.fx),status:"Requested",documentation:"Pending",reference:"",handling:"Requested; not yet paid",notes:"Created from Monthly Control Centre"});renderAll()}
 
 function renderAll(){
  const c=calc();
  renderMonthSelect();
- if(!c.missing){renderDashboard(c);renderDividends(c);renderCompare(c)}
+ if(!c.missing){renderDashboard(c);renderDividends(c);renderCompare(c);renderHomeControl(c)}
  renderMonthly();renderActuals();renderSettings();renderStorage();
  document.getElementById("monthPill").textContent=c.missing?"No month":fmtDate(c.selected);
  saveState();
@@ -565,7 +709,10 @@ function renderDashboard(c){
  document.getElementById("safeDividend").textContent=fmtUSD(c.safeBefore);
  document.getElementById("safeDividendSub").textContent=`Cash capacity ${fmtUSD(c.cashCapacity)} · profit capacity ${fmtUSD(c.remainingDistributable)}`;
  document.getElementById("potentialDividend").textContent=fmtUSD(c.pendingRequests);
+ const pending=state.dividends.filter(d=>String(d.status||"").toLowerCase().startsWith("requested"));
+ document.getElementById("pendingDividendSub").textContent=pending.length?`${pending.length} pending request${pending.length===1?"":"s"}; declaration will mark paid/complete same day.`:"No pending dividend request.";
  document.getElementById("minCashRetain").textContent=fmtUSD(c.safeAfterPending);
+ document.getElementById("remainingCapacitySub").textContent=c.safeAfterPending>0?"Additional safe capacity after pending requests.":"No additional safe capacity while current requests are reserved.";
  document.getElementById("dividendBreakdown").innerHTML=`
   <div class="k">Opening retained earnings</div><div class="v">${fmtUSD(a.retainedEarnings)}</div>
   <div class="k">Current-year profit YTD</div><div class="v">${fmtUSD(a.profit)}</div>
@@ -588,7 +735,7 @@ function renderDashboard(c){
   metric("Estimated company tax YTD",fmtSGD(c.companyTax),`Taxable-profit proxy ${fmtSGD(c.taxableSGD)}`),
   metric("Company tax pot — 15% rule",fmtUSD(c.companyTaxReserve),`${fmtPct(state.settings.companyTaxReservePct,0)} of cumulative profit`),
   metric("Forecast FY PBT",fmtUSD(c.fyPBT),`Forecast revenue ${fmtUSD(c.forecastRevenue)}`),
-  metric("Forecast FY company tax",fmtSGD(c.fyTax),`15% company tax pot ${fmtUSD(c.fyTaxReserveUSD)}`)
+  metric("Forecast FY company tax",fmtSGD(c.fyTax),`≈ ${fmtUSD(c.fyTax/c.fx)} · effective ${fmtPct(c.fyPBT>0?c.fyTax/(c.fyPBT*c.fx):0)} · 15% pot ${fmtUSD(c.fyTaxReserveUSD)}`)
  ].join("");
  const diff=c.regDivs-n(a.dividendsYTD);
  let recon=`<div class="notice ${Math.abs(diff)<.01?"":"warn"}"><b>Dividend register vs Sleek:</b> ${Math.abs(diff)<.01?"Reconciled at "+fmtUSD(c.regDivs):`Difference ${fmtUSD(diff)}. Safe-dividend logic uses the higher total (${fmtUSD(c.usedDivs)}) until reconciled.`}</div>`;
@@ -603,10 +750,11 @@ function renderProposal(c){
  state.proposedDividend=p;saveState();
  const post=n(c.currentCash)-n(c.pendingRequests)-p,head=post-c.minCash,profitHead=c.remainingDistributable-n(c.pendingRequests)-p;
  document.getElementById("postDividendCash").textContent=fmtUSD(post);
- const ok=p<=Math.max(0,c.safeAfterPending)+.005;
+ const available=Math.max(0,c.safeAfterPending),alreadyOver=c.safeAfterPending<=0&&c.pendingRequests>c.safeBefore+.005;
+ const ok=!alreadyOver&&p<=available+.005;
  const box=document.getElementById("proposalStatus");box.className="proposal-result "+(ok?"good":"bad");
- document.getElementById("proposalStatusText").textContent=ok?"SAFE":"TOO HIGH";
- document.getElementById("proposalHeadroom").textContent=ok?`Cash headroom ${fmtUSD(head)} · profit headroom ${fmtUSD(profitHead)}`:`Exceeds remaining safe amount by ${fmtUSD(p-Math.max(0,c.safeAfterPending))}`;
+ document.getElementById("proposalStatusText").textContent=alreadyOver?"NO CAPACITY":(ok?"SAFE":"TOO HIGH");
+ document.getElementById("proposalHeadroom").textContent=alreadyOver?`Pending requests already exceed the current internal safe limit by ${fmtUSD(c.pendingRequests-c.safeBefore)}`:(ok?`Cash headroom ${fmtUSD(head)} · profit headroom ${fmtUSD(profitHead)}`:`Exceeds remaining safe amount by ${fmtUSD(p-available)}`);
  document.getElementById("proposalCash").className="proposal-result "+(head>=0?"good":"bad");
 }
 function renderMonthSelect(){
@@ -628,6 +776,8 @@ function renderMonthly(){
    <td class="num"><b>${fmtUSD(used,2)}</b></td>
    <td><input type="number" step=".01" data-midx="${idx}" data-key="salarySGD" value="${esc(r.salarySGD)}"></td>
    <td><input type="number" step=".01" data-midx="${idx}" data-key="salaryUSD" value="${r.salaryUSD??""}"></td>
+   <td><input type="date" data-midx="${idx}" data-key="salaryPaidDate" value="${r.salaryPaidDate??""}"></td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="actualOpexUSD" value="${r.actualOpexUSD??""}"></td>
    <td><input type="number" step=".01" data-midx="${idx}" data-key="opexForecast" value="${r.opexForecast??""}" placeholder="${state.settings.forecastMonthlyOpexUSD}"></td>
    <td><input type="text" data-midx="${idx}" data-key="notes" value="${esc(r.notes)}"></td>
    <td><button class="btn small danger" data-delmonth="${idx}">×</button></td>
@@ -646,11 +796,13 @@ function renderActuals(){
 }
 function renderDividends(c){
  const tbody=document.getElementById("dividendBody");
- tbody.innerHTML=[...state.dividends].sort((a,b)=>b.declarationDate.localeCompare(a.declarationDate)).map(d=>{
-  const idx=state.dividends.indexOf(d);
-  return `<tr><td>${esc(d.period)}</td><td>${fmtDate(d.declarationDate)}</td><td>${fmtDate(d.cashDate)}</td><td class="num">${fmtUSD(d.amountUSD,2)}</td><td class="num">${n(d.fx).toFixed(3)}</td><td class="num">${fmtSGD(n(d.amountUSD)*n(d.fx),2)}</td>
-  <td><span class="badge good">${esc(d.status)}</span></td><td>${esc(d.documentation)}</td><td>${esc(d.reference)}</td><td>${esc(d.handling)}${d.notes?`<div class="small muted">${esc(d.notes)}</div>`:""}</td>
-  <td><button class="btn small" data-editdiv="${idx}">Edit</button> <button class="btn small danger" data-deldiv="${idx}">×</button></td></tr>`}).join("");
+ tbody.innerHTML=[...state.dividends].sort((a,b)=>String(b.declarationDate||b.requestDate||"").localeCompare(String(a.declarationDate||a.requestDate||""))).map(d=>{
+  const idx=state.dividends.indexOf(d),isRequested=String(d.status||"").toLowerCase().startsWith("requested");
+  const declareBtn=isRequested?` <button class="btn small green" data-declarediv="${idx}">Declare &amp; pay</button>`:"";
+  const badgeClass=isRequested?"warn":"good";
+  return `<tr><td>${esc(d.period)}</td><td>${fmtDate(d.requestDate)}</td><td>${fmtDate(d.declarationDate)}</td><td>${fmtDate(d.cashDate)}</td><td class="num">${fmtUSD(d.amountUSD,2)}</td><td class="num">${n(d.fx).toFixed(3)}</td><td class="num">${fmtSGD(n(d.amountUSD)*n(d.fx),2)}</td>
+  <td><span class="badge ${badgeClass}">${esc(d.status)}</span></td><td>${esc(d.documentation)}</td><td>${esc(d.reference)}</td><td>${esc(d.handling)}${d.notes?`<div class="small muted">${esc(d.notes)}</div>`:""}</td>
+  <td>${declareBtn} <button class="btn small" data-editdiv="${idx}">Edit</button> <button class="btn small danger" data-deldiv="${idx}">×</button></td></tr>`}).join("");
  document.getElementById("registeredDivs").textContent=fmtUSD(c.regDivs);
  document.getElementById("accountantDivs").textContent=fmtUSD(c.a.dividendsYTD);
  const diff=c.regDivs-n(c.a.dividendsYTD);
@@ -665,15 +817,18 @@ function renderCompare(c){
   metric("MOG advantage",fmtSGD(c.advantage),fmtPct(advantagePct),c.advantage>=0?"highlight":"danger")
  ].join("");
  const rows=[
-  ["Actual work days / year",state.settings.comparisonWorkDays,state.settings.comparisonWorkDays,"num"],
+  ["Baseline work days (26 × 12)",c.baseWorkDays,c.baseWorkDays,"num"],
+  ["Annual leave taken",state.settings.comparisonLeaveTaken,state.settings.comparisonLeaveTaken,"num"],
+  ["Public holidays worked",`${state.settings.nesPublicHolidaysWorked} of ${state.settings.nesPublicHolidays}`,`${state.settings.nesPublicHolidaysWorked} of ${state.settings.nesPublicHolidays}`],
+  ["Actual work days / year",c.work,c.work,"num"],
   ["Day rate",fmtUSD(state.settings.nesDayRate),fmtUSD(state.settings.mogDayRate)],
   ["Monthly allowance",fmtUSD(state.settings.nesAllowance),fmtUSD(state.settings.serviceFee)],
-  ["Paid leave days",state.settings.nesLeaveDays,0,"num"],
-  ["Paid PH day-equivalents",state.settings.nesPublicHolidays,0,"num"],
+  ["Paid annual-leave entitlement",state.settings.nesLeaveDays,0,"num"],
+  ["Paid PH entitlement",state.settings.nesPublicHolidays,0,"num"],
   ["Gross annual compensation / revenue",fmtUSD(c.nesGrossUSD),fmtUSD(c.mogGrossUSD)],
   ["Gross annual S$",fmtSGD(c.nesGrossSGD),fmtSGD(c.mogGrossSGD)],
   ["Salary to Shaun",fmtSGD(0),fmtSGD(c.mogSalary)],
-  ["Company non-wage opex",fmtSGD(0),fmtSGD(state.settings.comparisonMOGOpexSGD)],
+  ["Company non-wage opex",fmtSGD(0),fmtSGD(c.mogComparisonOpexSGD)],
   ["Company profit before tax",fmtSGD(0),fmtSGD(c.mogPBT)],
   ["Estimated company tax",fmtSGD(0),fmtSGD(c.mogCorpTax)],
   ["Company after-tax profit",fmtSGD(0),fmtSGD(c.mogCompanyAfter)],
@@ -697,8 +852,9 @@ const settingDefs={
   ["personalTaxPaidSGD","Personal tax already paid / withheld — S$","number","1"],["personalReliefsSGD","Annual personal reliefs/deductions — S$","number","1"]
  ],
  nes:[
-  ["nesWithholdingRate","NES historical withholding rate","percent","0.01"],["nesDayRate","NES old day rate — USD","number","0.01"],["nesAllowance","NES monthly allowance — USD","number","0.01"],["nesLeaveDays","NES paid annual leave days","number","1"],["nesPublicHolidays","NES paid PH day-equivalents","number","1"],
-  ["comparisonWorkDays","Comparison work days / year","number","1"],["comparisonMOGOpexSGD","Comparison MOG non-wage opex — S$/year","number","1"]
+  ["nesWithholdingRate","NES historical withholding rate","percent","0.01"],["nesDayRate","NES old day rate — USD","number","0.01"],["nesAllowance","NES monthly allowance — USD","number","0.01"],
+  ["comparisonWorkDaysPerMonth","Baseline work days / month","number","1"],["comparisonLeaveTaken","Annual leave actually taken — working days","number","1"],["nesLeaveDays","NES paid annual leave entitlement","number","1"],
+  ["nesPublicHolidays","Singapore PH entitlement — days","number","1"],["nesPublicHolidaysWorked","Public holidays actually worked","number","1"]
  ]
 };
 function settingField(def){
@@ -740,7 +896,7 @@ function updateCloudUI(){
 function initGoogle(){
  if(!window.google||!google.accounts||!google.accounts.oauth2){setTimeout(initGoogle,500);return;}
  if(tokenClient)return;
- tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:DRIVE_SCOPE,callback:async resp=>{
+ tokenClient=google.accounts.oauth2.initTokenClient({client_id:GOOGLE_CLIENT_ID,scope:DRIVE_SCOPE,include_granted_scopes:true,callback:async resp=>{
   if(resp.error){accessToken="";updateCloudUI();alert("Google sign-in failed: "+resp.error);return;}
   accessToken=resp.access_token||"";tokenExpiresAt=Date.now()+(Number(resp.expires_in||3600)-60)*1000;cloudConflict=false;updateCloudUI();
   try{await loadCloudState();}catch(e){console.error(e);alert("Google Drive connected, but the finance data could not be loaded: "+e.message)}
@@ -768,6 +924,17 @@ async function driveFetch(url,options={}){
  if(!res.ok){let detail="";try{detail=(await res.json())?.error?.message||""}catch(e){}throw new Error(detail||`Google Drive error ${res.status}`)}
  return res;
 }
+function storedDocumentName(file,type,key){return `${key}__${type}__${file.name}`}
+async function uploadPrivateDriveFile(file,type,key){
+ if(!accessToken)throw new Error("Connect Google Drive first.");const boundary="mogdoc_"+Date.now();
+ const meta={name:storedDocumentName(file,type,key),parents:["appDataFolder"],appProperties:{mogFinance:"true",month:key,type,originalName:file.name}};
+ const prefix=`--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n--${boundary}\r\nContent-Type: ${file.type||"application/octet-stream"}\r\n\r\n`,suffix=`\r\n--${boundary}--`;
+ const body=new Blob([prefix,file,suffix],{type:`multipart/related; boundary=${boundary}`});
+ return (await driveFetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType,createdTime,size",{method:"POST",headers:{"Content-Type":`multipart/related; boundary=${boundary}`},body})).json();
+}
+async function archiveMonthlyDocument(file,type,key){const status=document.getElementById("homeDocumentStatus");status.textContent=`Uploading ${file.name}…`;const d=await uploadPrivateDriveFile(file,type,key);state.documents.push({id:d.id,name:file.name,storedName:d.name,type,month:key,mimeType:d.mimeType||file.type,uploadedAt:d.createdTime||new Date().toISOString()});status.textContent=`Archived ${file.name} privately in Google Drive.`;renderAll();return d}
+async function openArchivedDocument(id){const d=(state.documents||[]).find(x=>x.id===id);if(!d)return;const blob=await (await driveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?alt=media`)).blob(),url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=d.name||"MOG_Finance_Document";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000)}
+
 async function findCloudFile(){
  const q=encodeURIComponent(`name='${DRIVE_FILE_NAME}' and trashed=false`);
  const url=`https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,name,modifiedTime,size)&pageSize=10`;
@@ -783,7 +950,7 @@ async function loadCloudState(){
   if(!f){cloudDirty=hasFinanceData();cloudBusy=false;updateCloudUI();if(cloudDirty)scheduleCloudSave();return;}
   const remote=await (await driveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(f.id)}?alt=media`)).json();
   if(!remote||!remote.settings||!Array.isArray(remote.monthly)||!Array.isArray(remote.actuals)||!Array.isArray(remote.dividends))throw new Error("Cloud file is not a valid MOG Finance data file.");
-  suppressCloudSave=true;state=remote;localStorage.setItem(APP_KEY,JSON.stringify(state));renderAll();suppressCloudSave=false;
+  suppressCloudSave=true;state=ensureStateDefaults(remote);localStorage.setItem(APP_KEY,JSON.stringify(state));renderAll();suppressCloudSave=false;
   cloudDirty=false;cloudConflict=false;cloudBusy=false;updateCloudUI();
  }catch(e){suppressCloudSave=false;cloudBusy=false;updateCloudUI();throw e}
 }
@@ -853,12 +1020,20 @@ document.getElementById("googleSignOutBtn").addEventListener("click",disconnectG
 document.getElementById("cloudSaveNowBtn").addEventListener("click",manualSaveCloud);
 document.getElementById("cloudReloadBtn").addEventListener("click",manualReloadCloud);
 document.getElementById("dashboardMonth").addEventListener("change",e=>{state.settings.selectedMonthEnd=e.target.value;renderAll()});
+document.getElementById("controlMonth").addEventListener("change",e=>{state.settings.controlMonth=e.target.value;renderAll()});
+document.getElementById("saveHomeMonthBtn").addEventListener("click",saveHomeMonth);
+document.getElementById("saveHomeBankBtn").addEventListener("click",saveHomeBank);
+document.getElementById("homeCreateRequestBtn").addEventListener("click",createHomeDividendRequest);
+document.getElementById("homeDeclarePendingBtn").addEventListener("click",()=>{const p=latestPendingDividend();if(p)declareDividend(state.dividends.indexOf(p))});
+document.getElementById("homeDocumentList").addEventListener("click",e=>{if(e.target.dataset.docopen)openArchivedDocument(e.target.dataset.docopen).catch(err=>alert("Could not open document: "+err.message))});
+document.getElementById("homeBankStatementInput").addEventListener("change",async e=>{const files=[...e.target.files];e.target.value="";if(!files.length)return;if(!accessToken){alert("Connect Google Drive first, then select the statement again.");connectGoogle();return}try{for(const f of files)await archiveMonthlyDocument(f,"bank",state.settings.controlMonth)}catch(err){alert("Could not archive bank statement: "+err.message)}});
+document.getElementById("homeManagementInput").addEventListener("change",async e=>{const file=e.target.files[0];e.target.value="";if(!file)return;if(!accessToken){alert("Connect Google Drive first, then select the management accounts again.");connectGoogle();return}try{await archiveMonthlyDocument(file,"management",state.settings.controlMonth);if(file.name.toLowerCase().endsWith(".xlsx"))await prepareSleekImport(file)}catch(err){alert("Could not process management accounts: "+err.message)}});
 document.getElementById("proposedDividend").addEventListener("input",()=>renderProposal(calc()));
 
 document.getElementById("monthlyBody").addEventListener("change",e=>{
  const el=e.target,idx=el.dataset.midx;if(idx===undefined)return;
  const key=el.dataset.key;
- state.monthly[idx][key]=(key==="notes")?el.value:maybeNum(el.value);
+ state.monthly[idx][key]=(key==="notes"||key==="salaryPaidDate")?el.value:maybeNum(el.value);
  renderAll();
 });
 document.getElementById("monthlyBody").addEventListener("click",e=>{
@@ -869,7 +1044,7 @@ document.getElementById("addMonthBtn").addEventListener("click",()=>{
  const sorted=[...state.monthly].sort((a,b)=>a.period.localeCompare(b.period)),last=sorted[sorted.length-1];
  const d=last?new Date(last.period+"T00:00:00"):new Date();d.setMonth(d.getMonth()+1);
  const p=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`;
- state.monthly.push({period:p,days:26,rate:n(state.settings.mogDayRate),service:n(state.settings.serviceFee),recordedRevenue:null,salarySGD:n(state.settings.monthlySalarySGD),salaryUSD:null,opexForecast:null,notes:"Forecast"});
+ state.monthly.push({period:p,days:26,rate:n(state.settings.mogDayRate),service:n(state.settings.serviceFee),recordedRevenue:null,salarySGD:n(state.settings.monthlySalarySGD),salaryUSD:null,salaryPaidDate:"",actualOpexUSD:null,opexForecast:null,notes:"Forecast"});
  renderAll();
 });
 
@@ -900,24 +1075,65 @@ document.getElementById("actualsBody").addEventListener("click",e=>{
 });
 
 const divFields=[
- ["period","Dividend period","text"],["declarationDate","Declaration date","date"],["cashDate","Cash payment date","date"],["amountUSD","Amount — USD","number"],["fx","FX S$/US$","number"],
+ ["period","Dividend period","text"],["requestDate","Request date","date"],["declarationDate","Declaration date","date"],["cashDate","Cash payment date","date"],["amountUSD","Amount — USD","number"],["fx","FX S$/US$","number"],
  ["status","Status","text"],["documentation","Documentation","text"],["reference","Sleek reference","text"],["handling","Cash / loan handling","text","span2"],["notes","Notes","text","span2"]
 ];
+const requestFields=[["requestDate","Request date","date"],["amountUSD","Requested amount — USD","number"],["fx","FX S$/US$","number"],["notes","Notes","text","span2"]];
+function dividendFieldHtml(fields,d){
+ return fields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" step="${t==="number"?".01":""}" value="${esc(d[k]??"")}"></div>`).join("");
+}
 function openDividend(idx=null){
- editingDividend=idx;const d=idx===null?{period:"",declarationDate:"",cashDate:"",amountUSD:0,fx:n(state.settings.fx),status:"Declared/Paid",documentation:"To confirm",reference:"",handling:"Direct dividend",notes:""}:state.dividends[idx];
- document.getElementById("dividendModalTitle").textContent=idx===null?"Add dividend":"Edit dividend";
- document.getElementById("dividendFormFields").innerHTML=divFields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" step="${t==="number"?".01":""}" value="${esc(d[k]??"")}"></div>`).join("");
+ editingDividend=idx;
+ if(idx===null){
+  const today=localISODate(),c=calc(),safeAvailable=c.missing?0:Math.max(0,c.safeAfterPending);
+  const d={requestDate:today,amountUSD:0,fx:n(state.settings.fx),notes:""};
+  document.getElementById("dividendModalTitle").textContent="Create dividend request";
+  document.getElementById("dividendFormFields").innerHTML=`<div class="notice span2">Current safe amount available for a new request: <b>${fmtUSD(safeAvailable,2)}</b>. The app will not create a request above this limit.</div>`+dividendFieldHtml(requestFields,d);
+ }else{
+  const d=state.dividends[idx];
+  document.getElementById("dividendModalTitle").textContent="Edit dividend";
+  document.getElementById("dividendFormFields").innerHTML=dividendFieldHtml(divFields,d);
+ }
  document.getElementById("dividendModal").classList.remove("hidden");
 }
 document.getElementById("newDividendBtn").addEventListener("click",()=>openDividend());
 document.getElementById("dividendForm").addEventListener("submit",e=>{
- e.preventDefault();const fd=new FormData(e.target),obj={id:editingDividend===null?"d"+Date.now():state.dividends[editingDividend].id};
- divFields.forEach(([k,l,t])=>obj[k]=t==="number"?n(fd.get(k)):fd.get(k));
- if(!obj.declarationDate){alert("Declaration date is required.");return}
- if(editingDividend===null)state.dividends.push(obj);else state.dividends[editingDividend]=obj;
+ e.preventDefault();const fd=new FormData(e.target);
+ if(editingDividend===null){
+  const requestDate=fd.get("requestDate"),amountUSD=n(fd.get("amountUSD")),fx=n(fd.get("fx"));
+  if(!requestDate){alert("Request date is required.");return}
+  if(amountUSD<=0){alert("Enter a dividend request amount greater than zero.");return}
+  const c=calc(),safeAvailable=c.missing?0:Math.max(0,c.safeAfterPending);
+  if(amountUSD>safeAvailable+.01){alert(`This request is above the current safe limit of ${fmtUSD(safeAvailable,2)}.`);return}
+  const obj={id:"d"+Date.now(),period:dividendPeriodFromDate(requestDate),requestDate,declarationDate:"",cashDate:"",amountUSD,fx,status:"Requested",documentation:"Pending",reference:"",handling:"Requested; not yet paid",notes:fd.get("notes")||""};
+  state.dividends.push(obj);
+ }else{
+  const obj={id:state.dividends[editingDividend].id};
+  divFields.forEach(([k,l,t])=>obj[k]=t==="number"?n(fd.get(k)):fd.get(k));
+  if(String(obj.status||"").toLowerCase().startsWith("requested")){
+   if(!obj.requestDate){alert("Request date is required for a pending request.");return}
+   obj.declarationDate="";obj.cashDate="";
+  }else if(!obj.declarationDate){alert("Declaration date is required for a completed dividend.");return}
+  state.dividends[editingDividend]=obj;
+ }
  document.getElementById("dividendModal").classList.add("hidden");renderAll();
 });
+function declareDividend(idx){
+ const d=state.dividends[idx];if(!d)return;
+ if(!String(d.status||"").toLowerCase().startsWith("requested")){alert("This dividend is already declared.");return}
+ const today=localISODate();
+ if(!confirm(`Declare ${fmtUSD(d.amountUSD,2)} as paid and complete today (${fmtDate(today)})?\n\nDeclaration date and payment date will both be set to today.`))return;
+ d.declarationDate=today;
+ d.cashDate=today;
+ d.status="Declared/Paid";
+ d.documentation="Complete";
+ d.handling="Direct dividend";
+ const stamp=`Declared and paid ${fmtDate(today)}`;
+ if(!String(d.notes||"").includes(stamp))d.notes=(d.notes?d.notes+" · ":"")+stamp;
+ renderAll();
+}
 document.getElementById("dividendBody").addEventListener("click",e=>{
+ if(e.target.dataset.declarediv!==undefined)declareDividend(Number(e.target.dataset.declarediv));
  if(e.target.dataset.editdiv!==undefined)openDividend(Number(e.target.dataset.editdiv));
  if(e.target.dataset.deldiv!==undefined&&confirm("Delete this dividend entry?")){state.dividends.splice(Number(e.target.dataset.deldiv),1);renderAll()}
 });
@@ -939,7 +1155,7 @@ function downloadBlob(content,name,type){
 document.getElementById("exportBackupBtn").addEventListener("click",()=>downloadBlob(JSON.stringify(state,null,2),`MOG_Finance_Backup_${new Date().toISOString().slice(0,10)}.json`,"application/json"));
 document.getElementById("importBackupInput").addEventListener("change",async e=>{
  const f=e.target.files[0];if(!f)return;
- try{const p=JSON.parse(await f.text());if(!p.settings||!p.monthly||!p.actuals||!p.dividends)throw new Error("Not a MOG Finance backup");state=p;renderAll();alert("Backup imported.")}catch(err){alert("Could not import backup: "+err.message)}
+ try{const p=JSON.parse(await f.text());if(!p.settings||!p.monthly||!p.actuals||!p.dividends)throw new Error("Not a MOG Finance backup");state=ensureStateDefaults(p);renderAll();alert("Backup imported.")}catch(err){alert("Could not import backup: "+err.message)}
  e.target.value="";
 });
 document.getElementById("exportSummaryBtn").addEventListener("click",()=>{
@@ -951,7 +1167,7 @@ document.getElementById("exportSummaryBtn").addEventListener("click",()=>{
  ];
  downloadBlob(rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n"),`MOG_Finance_Summary_${c.selected}.csv`,"text/csv");
 });
-document.getElementById("resetBtn").addEventListener("click",()=>{if(confirm("Reset this app to a blank state? If Google Drive is connected, the blank state will also replace the cloud copy. Export a backup first if needed.")){state=clone(EMPTY_STATE);renderAll()}});
+document.getElementById("resetBtn").addEventListener("click",()=>{if(confirm("Reset this app to a blank state? If Google Drive is connected, the blank state will also replace the cloud copy. Export a backup first if needed.")){state=ensureStateDefaults(clone(EMPTY_STATE));renderAll()}});
 
 /* Minimal local XLSX reader: reads ZIP central directory and inflates XML using the browser DecompressionStream API. */
 async function unzip(buffer){
@@ -1023,8 +1239,7 @@ async function parseXlsx(file){
   incomeTaxPayable:findVal(bs,"Income Tax Payable"),currentYearEarnings:(findVal(bs,"Current Year Earnings")||findVal(bs,"Provisional Profit / Loss (Credit)")),taxAdjustments:0,currentTaxPaid:0,source:file.name
  };
 }
-document.getElementById("xlsxInput").addEventListener("change",async e=>{
- const file=e.target.files[0];if(!file)return;
+async function prepareSleekImport(file){
  try{
   let x=await parseXlsx(file);
   const prior=[...state.actuals].filter(a=>a.monthEnd<x.monthEnd).sort((a,b)=>b.monthEnd.localeCompare(a.monthEnd))[0];
@@ -1049,12 +1264,12 @@ document.getElementById("xlsxInput").addEventListener("change",async e=>{
    <div class="k">Dividends paid YTD</div><div class="v">${fmtUSD(x.dividendsYTD,2)}</div><div class="k">Retained earnings</div><div class="v">${fmtUSD(x.retainedEarnings,2)}</div>
   </div><div class="notice warn" style="margin-top:15px">Tax adjustments default to zero on import. Enter any accountant tax-computation adjustments later if required.</div>`;
   document.getElementById("importPreviewModal").classList.remove("hidden");
- }catch(err){alert("Could not read this XLSX: "+err.message+" You can still enter the snapshot manually.")}
- e.target.value="";
-});
+ }catch(err){alert("Could not read this XLSX: "+err.message+" You can still enter the snapshot manually.");throw err}
+}
+document.getElementById("xlsxInput").addEventListener("change",async e=>{const file=e.target.files[0];e.target.value="";if(!file)return;await prepareSleekImport(file).catch(()=>{});});
 document.getElementById("confirmXlsxImport").addEventListener("click",()=>{
  if(!pendingXlsx)return;const i=state.actuals.findIndex(a=>a.monthEnd===pendingXlsx.monthEnd);if(i>=0)state.actuals[i]=pendingXlsx;else state.actuals.push(pendingXlsx);
- state.settings.selectedMonthEnd=pendingXlsx.monthEnd;pendingXlsx=null;document.getElementById("importPreviewModal").classList.add("hidden");renderAll();showPage("dashboard");
+ state.settings.selectedMonthEnd=pendingXlsx.monthEnd;state.settings.controlMonth=String(pendingXlsx.monthEnd).slice(0,7);pendingXlsx=null;document.getElementById("importPreviewModal").classList.add("hidden");renderAll();showPage("dashboard");
 });
 
 renderAll();

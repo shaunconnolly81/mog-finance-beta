@@ -8,3 +8,5 @@ After Cloudflare assigns the *.pages.dev URL, add that exact HTTPS origin to the
 Cloudflare remains the primary app. GitHub Pages is retained as a fallback.
 The Mac standby serves the same V6 public app files independently of Cloudflare.
 Finance records remain in the private Google Drive app-data file; do not commit financial exports, backups, credentials or signing keys to this repository.
+
+Automatic Mac code updates: edit public app files in /Library/Application Support/MOG Finance/source, or commit them on GitHub. The Mac checks every minute and preserves conflicting edits for review. Private Finance exports and credentials are excluded from automatic publication.

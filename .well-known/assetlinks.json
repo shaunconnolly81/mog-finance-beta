@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.shaunconnolly.mogfinance",
+      "sha256_cert_fingerprints": [
+        "3A:A0:2B:F2:7C:47:91:0D:B2:9A:A5:95:79:EB:70:A2:88:B8:C5:57:55:1F:3D:57:C2:4B:C7:FF:02:77:8A:B6"
+      ]
+    }
+  }
+]

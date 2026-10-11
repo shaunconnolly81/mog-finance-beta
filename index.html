@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#102a43">
-<title>MOG Finance Online Beta</title>
+<title>MOG Finance V6</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
@@ -284,6 +284,29 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
   #page-dashboard .page-head h2{font-size:22px}
 }
 
+
+/* ===== V6 simplified monthly close ===== */
+.compact-home{background:#fff;border:1px solid var(--border);padding:18px}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--muted);margin-bottom:4px}
+.month-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.home-inline-status{font-size:12px;color:var(--muted);margin:-2px 0 12px}
+.home-workspace{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:16px}
+.home-input-panel,.home-result-panel{border:1px solid var(--border);border-radius:13px;padding:16px;background:#fff;min-width:0}
+.home-result-panel{background:#fbfcfd}
+.panel-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:13px}.panel-title h3{margin:0;font-size:17px}
+.home-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.money-combo{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:6px}.money-combo select{min-height:42px;border:1px solid var(--border);border-radius:8px;background:#fff;padding:0 8px;font-size:14px}
+.mini-section-label{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin:17px 0 8px}
+.bank-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.home-input-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.standing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.standing-item{border:1px solid var(--border);border-radius:10px;background:#fff;padding:11px}.standing-item span{display:block;color:var(--muted);font-size:11px;font-weight:700}.standing-item strong{display:block;font-size:20px;margin-top:4px;overflow-wrap:anywhere}.standing-item.emphasis{background:var(--greenbg);border-color:#bde7cc}.standing-item.emphasis strong{color:var(--green)}
+.comparison-strip{margin-top:10px;border-radius:9px;background:#eef3f7;padding:9px 10px;font-size:11px;color:#526575;line-height:1.4}
+.dividend-box{margin-top:13px;border-top:1px solid var(--border);padding-top:13px}.dividend-proposal-row{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:10px}.dividend-proposal-row strong{display:block;font-size:27px;color:var(--green)}.mini-label{font-size:9px;font-weight:850;letter-spacing:.09em;color:var(--muted)}.full-action{width:100%;margin-top:10px;min-height:45px;font-size:14px;font-weight:800}.home-closed-note{margin-top:11px;padding:9px 11px;border-radius:9px;background:#eef3f7;color:#536879;font-size:12px}
+input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-combo select:disabled{background:#f2f4f5;color:#7d8b96;cursor:not-allowed}
+@media(max-width:960px){.home-workspace{grid-template-columns:1fr}.bank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.compact-home{padding:12px}.control-head{align-items:stretch}.month-tools{justify-content:stretch}.month-tools .control-month{flex:1;min-width:0}.home-form-grid,.bank-grid,.standing-grid{grid-template-columns:1fr 1fr}.home-input-panel,.home-result-panel{padding:12px}.dividend-proposal-row{align-items:flex-start}.dividend-proposal-row strong{font-size:24px}}
+@media(max-width:380px){.home-form-grid,.bank-grid,.standing-grid{grid-template-columns:1fr}.money-combo{grid-template-columns:minmax(0,1fr) 72px}}
+
 </style>
 </head>
 <body>
@@ -294,12 +317,13 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
     <button class="navbtn active" data-page="dashboard"><span class="icon">⌂</span>Monthly Control</button>
     <button class="navbtn" data-page="monthly"><span class="icon">▤</span>Monthly Operations</button>
     <button class="navbtn" data-page="accountant"><span class="icon">▥</span>Sleek Accounts</button>
+    <button class="navbtn" data-page="overview"><span class="icon">◎</span>Finance Overview</button>
     <button class="navbtn" data-page="dividends"><span class="icon">◈</span>Dividends</button>
     <button class="navbtn" data-page="compare"><span class="icon">⇄</span>NES vs MOG</button>
     <button class="navbtn" data-page="settings"><span class="icon">⚙</span>Settings</button>
     <button class="navbtn" data-page="backup"><span class="icon">⇩</span>Backup & Data</button>
   </nav>
-  <div class="sidebar-footer">Online Beta<br>Private data syncs to your Google Drive app-data folder.<br><br><span id="saveStatus">Local cache ready</span></div>
+  <div class="sidebar-footer">V6 · Cloud / Mac<br>Private data syncs to your Google Drive app-data folder.<br><br><span id="saveStatus">Local cache ready</span></div>
 </aside>
 
 <main class="main">
@@ -310,67 +334,83 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
 <div class="content">
 
 <section class="page active" id="page-dashboard">
-  <div class="control-hero">
+  <div class="control-hero compact-home">
     <div class="control-head">
-      <div><h2>Monthly Control Centre</h2><p>Enter the month, archive the supporting documents and manage the dividend from one screen.</p></div>
-      <select id="controlMonth" class="btn control-month" aria-label="Control month"></select>
+      <div>
+        <div class="eyebrow">MONTHLY CLOSE &amp; DIVIDEND</div>
+        <h2 id="homeMonthHeading">Current month</h2>
+        <p id="homeMonthSub">Enter the closing figures after the month's income and salary have moved.</p>
+      </div>
+      <div class="month-tools">
+        <select id="controlMonth" class="btn control-month" aria-label="Control month"></select>
+        <span id="homeStatusBadge" class="status-pill">OPEN</span>
+      </div>
     </div>
-    <div id="homeMonthStatus" class="checklist"></div>
 
-    <div class="quick-grid">
-      <div class="quick-card">
-        <h3>Monthly income &amp; costs</h3><div class="hint">Actual cash/payroll inputs for the selected month. Forecast values remain available in Monthly Operations.</div>
-        <div class="quick-form">
-          <div class="field"><label>Revenue / income — US$</label><input id="homeRevenue" type="number" step="0.01"></div>
-          <div class="field"><label>Actual non-wage expenses — US$</label><input id="homeOpex" type="number" step="0.01"></div>
-          <div class="field"><label>Salary accounting expense — S$</label><input id="homeSalarySGD" type="number" step="0.01"></div>
-          <div class="field"><label>Salary actually paid — US$</label><input id="homeSalaryUSD" type="number" step="0.01"></div>
-          <div class="field span2"><label>Salary payment date</label><input id="homeSalaryDate" type="date"></div>
+    <div id="homeMonthStatus" class="home-inline-status"></div>
+
+    <div class="home-workspace">
+      <div class="home-input-panel">
+        <div class="panel-title"><h3>Monthly input</h3><span id="homeEditHint" class="small muted"></span></div>
+        <div class="home-form-grid">
+          <div class="field"><label>Days worked</label><input id="homeDays" type="number" min="0" step="1"></div>
+          <div class="field"><label>Calculated work income — US$</label><input id="homeCalculatedIncome" type="text" readonly></div>
+          <div class="field extra-income-field"><label>Extra NES reimbursement / payment</label><div class="money-combo"><input id="homeExtraIncome" type="number" min="0" step="0.01" placeholder="0.00"><select id="homeExtraCurrency" aria-label="Additional NES payment currency"><option value="USD">USD</option><option value="SGD">SGD</option></select></div></div>
+          <div class="field"><label>Salary paid — US$</label><input id="homeSalaryUSD" type="number" min="0" step="0.01"></div>
         </div>
-        <div class="quick-actions"><button class="btn primary" id="saveHomeMonthBtn">Save month</button><span class="small muted" id="homeMonthSaveStatus"></span></div>
+
+        <div class="mini-section-label">Closing bank balances</div>
+        <div class="bank-grid">
+          <div class="field"><label>Revolut USD</label><input id="homeRevolutUSD" type="number" min="0" step="0.01"></div>
+          <div class="field"><label>Revolut SGD</label><input id="homeRevolutSGD" type="number" min="0" step="0.01"></div>
+          <div class="field"><label>Sleek USD</label><input id="homeSleekUSD" type="number" min="0" step="0.01"></div>
+          <div class="field"><label>Sleek SGD</label><input id="homeSleekSGD" type="number" min="0" step="0.01"></div>
+        </div>
+
+        <div class="home-input-actions">
+          <button class="btn primary" id="saveHomeMonthBtn">Save &amp; recalculate</button>
+          <button class="btn hidden" id="homeEditMonthBtn" type="button">Edit month</button>
+          <button class="btn green hidden" id="homeSaveCorrectionBtn" type="button">Save correction</button>
+          <span class="small muted" id="homeMonthSaveStatus"></span>
+        </div>
       </div>
 
-      <div class="quick-card">
-        <h3>Bank position</h3><div class="hint">Used in the cash side of the safe-dividend calculation.</div>
-        <div class="quick-form">
-          <div class="field"><label>Bank snapshot date</label><input id="homeBankDate" type="date"></div>
-          <div class="field"><label>FX — S$ per US$</label><input id="homeBankFX" type="number" step="0.001"></div>
-          <div class="field"><label>Revolut USD</label><input id="homeRevolutUSD" type="number" step="0.01"></div>
-          <div class="field"><label>Revolut SGD</label><input id="homeRevolutSGD" type="number" step="0.01"></div>
-          <div class="field"><label>Sleek USD</label><input id="homeSleekUSD" type="number" step="0.01"></div>
-          <div class="field"><label>Sleek SGD</label><input id="homeSleekSGD" type="number" step="0.01"></div>
-          <div class="field"><label>Current A/R — US$</label><input id="homeAR" type="number" step="0.01"></div>
-          <div class="field"><label>Current A/P — US$</label><input id="homeAP" type="number" step="0.01"></div>
-          <div class="field span2"><label>Due to shareholder — US$</label><input id="homeDueTo" type="number" step="0.01"></div>
+      <div class="home-result-panel">
+        <div class="panel-title"><h3>Current standing</h3><span id="homeAsAt" class="small muted"></span></div>
+        <div class="standing-grid">
+          <div class="standing-item"><span>Current cash</span><strong id="homeCurrentCash">—</strong></div>
+          <div class="standing-item"><span>Estimated other expenses</span><strong id="homeAutoExpenses">—</strong></div>
+          <div class="standing-item"><span>15% tax reserve</span><strong id="homeTaxReserve">—</strong></div>
+          <div class="standing-item emphasis"><span>Available dividend</span><strong id="homeSafeDividend">—</strong></div>
         </div>
-        <div class="quick-actions"><button class="btn primary" id="saveHomeBankBtn">Save bank position</button><span class="small muted" id="homeBankSaveStatus"></span></div>
-      </div>
+        <div id="homePreviousComparison" class="comparison-strip">Previous month comparison will appear after the first close.</div>
 
-      <div class="quick-card">
-        <h3>Monthly documents</h3><div class="hint">Files are archived privately in MOG Finance's Google Drive app-data vault and indexed by month here.</div>
-        <div class="quick-actions">
-          <label class="btn upload-label" for="homeBankStatementInput">Upload bank statement</label><input id="homeBankStatementInput" class="hidden" type="file" multiple accept=".pdf,.csv,.xlsx,.xls,image/*">
-          <label class="btn upload-label" for="homeManagementInput">Upload management accounts</label><input id="homeManagementInput" class="hidden" type="file" accept=".xlsx,.pdf">
+        <div class="dividend-box">
+          <div class="dividend-proposal-row"><div><span class="mini-label">RECOMMENDED</span><strong id="homeRecommendedDividend">—</strong></div><div class="small muted" id="homeDividendBasis"></div></div>
+          <div class="field"><label>Actual dividend to declare — US$</label><input id="homeDividendAmount" type="number" min="0" step="1000"></div>
+          <button class="btn green full-action" id="homeCreateRequestBtn">Declare &amp; close month</button>
+          <div id="homeDividendNote" class="small muted"></div>
         </div>
-        <div id="homeDocumentStatus" class="small muted" style="margin-top:9px"></div>
-        <div id="homeDocumentList" class="doc-list"></div>
       </div>
+    </div>
 
-      <div class="quick-card">
-        <h3>Dividend action</h3><div class="hint">The recommendation is based on the latest confirmed management accounts and current bank position. Nothing is declared automatically.</div>
-        <div class="quick-summary">
-          <div class="quick-stat good"><div class="k">Safe available</div><div class="v" id="homeSafeDividend">—</div></div>
-          <div class="quick-stat"><div class="k">Recommended request</div><div class="v" id="homeRecommendedDividend">—</div></div>
-          <div class="quick-stat"><div class="k">Pending request</div><div class="v" id="homePendingDividend">—</div></div>
-        </div>
-        <div class="field"><label>Dividend request — US$</label><input id="homeDividendAmount" type="number" min="0" step="1000"></div>
-        <div class="quick-actions"><button class="btn primary" id="homeCreateRequestBtn">Create request</button><button class="btn green hidden" id="homeDeclarePendingBtn">Declare &amp; pay today</button></div>
-        <div id="homeDividendNote" class="small muted" style="margin-top:8px"></div>
-      </div>
+    <div class="home-closed-note hidden" id="homeClosedNote">This month is closed. Use <b>Edit month</b> only if a historical figure needs correcting.</div>
+
+    <!-- Compatibility controls retained but hidden; detailed document/archive tools remain in their own tabs. -->
+    <div class="hidden" aria-hidden="true">
+      <input id="homeRevenue"><input id="homeOpex"><input id="homeSalarySGD"><input id="homeSalaryDate" type="date">
+      <input id="homeBankDate" type="date"><input id="homeBankFX"><input id="homeAR"><input id="homeAP"><input id="homeDueTo">
+      <button id="saveHomeBankBtn" type="button"></button><span id="homeBankSaveStatus"></span>
+      <span id="homePendingDividend"></span><button id="homeDeclarePendingBtn" type="button"></button>
+      <input id="homeBankStatementInput" type="file"><input id="homeManagementInput" type="file">
+      <div id="homeDocumentStatus"></div><div id="homeDocumentList"></div>
     </div>
   </div>
 
-  <div class="detail-divider">Detailed finance overview</div>
+</section>
+
+<section class="page" id="page-overview">
+  <div class="page-head"><div><h2>Finance Overview</h2><p>Detailed tax, profit and dividend calculations retained for reference.</p></div></div>
   <div class="page-head"><div><h2>Finance Dashboard</h2><p>Tax reserves, cash position and safe dividend capacity.</p></div><div class="toolbar"><select id="dashboardMonth" class="btn"></select></div></div>
   <div class="grid grid-4" id="dashboardTop"></div>
 
@@ -405,11 +445,10 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
   <div class="section-title"><h3>Reconciliation checks</h3></div>
   <div id="reconciliation"></div>
 </section>
-
 <section class="page" id="page-monthly">
-  <div class="page-head"><div><h2>Monthly Operations</h2><p>Work days, contract revenue and salary. Recorded revenue overrides the expected formula.</p></div><button class="btn primary" id="addMonthBtn">+ Add month</button></div>
+  <div class="page-head"><div><h2>Monthly Operations</h2><p>Detailed monthly history behind the simplified Home screen. Closed months can still be reviewed and corrected.</p></div><button class="btn primary" id="addMonthBtn">+ Add month</button></div>
   <div class="table-wrap"><table><thead><tr>
-    <th>Period</th><th>Days</th><th>Rate USD</th><th>Service USD</th><th>Expected Revenue</th><th>Recorded Revenue</th><th>Revenue Used</th><th>Salary S$</th><th>Salary Paid US$</th><th>Salary Paid Date</th><th>Actual Opex US$</th><th>Forecast Opex US$</th><th>Notes</th><th></th>
+    <th>Period</th><th>Status</th><th>Days</th><th>Rate US$</th><th>Service US$</th><th>Work Income</th><th>Extra NES</th><th>Salary S$</th><th>Salary Paid US$</th><th>Closing Cash US$</th><th>Cash Adjustment US$</th><th>Auto Other Expenses US$</th><th>Dividend US$</th><th>Notes</th><th></th>
   </tr></thead><tbody id="monthlyBody"></tbody></table></div>
 </section>
 
@@ -424,14 +463,14 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
 </section>
 
 <section class="page" id="page-dividends">
-  <div class="page-head"><div><h2>Dividend Register</h2><p>Create a request from the calculated safe limit. When you declare a request, MOG Finance treats it as paid and complete on that same date.</p></div><button class="btn primary" id="newDividendBtn">+ Create request</button></div>
+  <div class="page-head"><div><h2>Dividend Register</h2><p>Every confirmed dividend is logged as declared, paid and complete on the confirmation date.</p></div><button class="btn primary" id="newDividendBtn">+ Record dividend</button></div>
   <div class="grid grid-3" style="margin-bottom:16px">
     <div class="card metric"><div class="label">Declared dividends through selected month</div><div class="value" id="registeredDivs">—</div></div>
     <div class="card metric"><div class="label">Accountant dividends YTD</div><div class="value" id="accountantDivs">—</div></div>
     <div class="card metric" id="divReconCard"><div class="label">Reconciliation difference</div><div class="value" id="divRecon">—</div></div>
   </div>
   <div class="table-wrap"><table><thead><tr>
-    <th>Period</th><th>Request date</th><th>Declaration</th><th>Cash date</th><th>USD</th><th>FX</th><th>S$ equivalent</th><th>Status</th><th>Documentation</th><th>Sleek ref.</th><th>Handling / Notes</th><th></th>
+    <th>Period</th><th>Logged date</th><th>Declaration</th><th>Cash date</th><th>USD</th><th>FX</th><th>S$ equivalent</th><th>Status</th><th>Documentation</th><th>Sleek ref.</th><th>Handling / Notes</th><th></th>
   </tr></thead><tbody id="dividendBody"></tbody></table></div>
 </section>
 
@@ -446,7 +485,7 @@ table{border-collapse:collapse;width:100%;font-size:13px}th{background:#eef4f8;c
   <div class="page-head"><div><h2>Settings</h2><p>All assumptions are editable. Changes recalculate the entire app immediately.</p></div><button class="btn green" id="saveSettingsBtn">Save settings</button></div>
   <div class="card">
     <div class="settings-group"><h3>Current contract & currency</h3><div class="settings-grid" id="settingsContract"></div></div>
-    <div class="settings-group"><h3>Tax & reserves</h3><div class="settings-grid" id="settingsTax"></div></div>
+    <div class="settings-group"><h3>Tax reserve</h3><div class="notice" style="margin-bottom:12px">The monthly dividend tool keeps only the 15% cumulative company-tax reserve. There is no separate operating cash buffer.</div><div class="settings-grid" id="settingsTax"></div></div>
     <div class="settings-group"><h3>NES comparison</h3><div class="notice" style="margin-bottom:12px">Comparison uses one OPEX assumption only: <b>Forecast monthly non-wage OPEX</b> above (currently US$400/month). Actual work days are calculated from the 26-day baseline less annual leave and public holidays not worked.</div><div class="settings-grid" id="settingsNES"></div></div>
     <div class="settings-group"><h3>Tax references</h3>
       <div class="notice">Individual tax rates: <a class="source-link" target="_blank" href="https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-residency-and-tax-rates/individual-income-tax-rates">IRAS resident individual rates</a><br>
@@ -487,10 +526,10 @@ const GOOGLE_CLIENT_ID="1087290113731-kr73169jjht9jeah8lfnf5m4kau3tgjt.apps.goog
 const DRIVE_SCOPE="https://www.googleapis.com/auth/drive.appdata";
 const DRIVE_FILE_NAME="mog-finance-data.json";
 const EMPTY_STATE={
- version:5,
+ version:6,
  settings:{
   fx:1,selectedMonthEnd:"",fyStart:"",fyEnd:"",personalStart:"",personalEnd:"",mogDayRate:0,serviceFee:0,
-  monthlySalarySGD:0,companyTaxReservePct:0.15,operatingBufferUSD:0,forecastMonthlyOpexUSD:400,controlMonth:"",
+  monthlySalarySGD:0,companyTaxReservePct:0.15,operatingBufferUSD:0,forecastMonthlyOpexUSD:400,controlMonth:"",baselineProfitUSD:0,baselineMonth:"",
   currentFYTaxPaidUSD:0,corpRebatePct:0,corpRebateCapSGD:0,suteEligible:true,
   personalTaxPaidSGD:0,personalReliefsSGD:0,nesWithholdingRate:0,nesDayRate:0,nesAllowance:0,
   nesLeaveDays:14,nesPublicHolidays:11,nesPublicHolidaysWorked:9,comparisonWorkDaysPerMonth:26,comparisonLeaveTaken:20,comparisonWorkDays:0,comparisonMOGOpexSGD:0
@@ -511,8 +550,31 @@ function ensureStateDefaults(p){
   p.settings.comparisonWorkDaysPerMonth=26;p.settings.comparisonLeaveTaken=20;p.settings.nesLeaveDays=14;p.settings.nesPublicHolidays=11;p.settings.nesPublicHolidaysWorked=9;
   p.monthly.forEach(r=>{if(r.opexForecast!==null&&r.opexForecast!==undefined&&Math.abs(Number(r.opexForecast)-872.86)<.02)r.opexForecast=null;});
  }
- if(!p.settings.controlMonth){const now=localISODate().slice(0,7),keys=p.monthly.map(r=>String(r.period||"").slice(0,7));p.settings.controlMonth=keys.includes(now)?now:(keys.sort().reverse()[0]||now)}
- p.version=5;return p;
+ if(oldVersion<6){
+  p.settings.operatingBufferUSD=0;
+  // Learn the current day rate from recent recorded invoices when several rows agree.
+  const derived=p.monthly.filter(r=>Number(r.days)>0&&Number(r.recordedRevenue)>Number(r.service||p.settings.serviceFee||0)).slice().sort((a,b)=>String(b.period||"").localeCompare(String(a.period||""))).slice(0,3).map(r=>(Number(r.recordedRevenue)-Number(r.service||p.settings.serviceFee||0))/Number(r.days)).filter(Number.isFinite);
+  if(derived.length>=2){const avg=derived.reduce((a,b)=>a+b,0)/derived.length;if(derived.every(x=>Math.abs(x-avg)<.05)){p.settings.mogDayRate=Math.round(avg*100)/100;p.monthly.forEach(r=>{const service=Number(r.service||p.settings.serviceFee||0),days=Number(r.days)||0,rec=Number(r.recordedRevenue);if(days>0&&Number.isFinite(rec)&&Math.abs((rec-service)/days-p.settings.mogDayRate)<.05)r.rate=p.settings.mogDayRate;else if(r.recordedRevenue===null||r.recordedRevenue===undefined)r.rate=p.settings.mogDayRate;});}}
+  // Choose the latest month with real user-entered activity as the first open month.
+  const active=p.monthly.filter(r=>r.recordedRevenue!==null&&r.recordedRevenue!==undefined||r.salaryUSD!==null&&r.salaryUSD!==undefined).sort((a,b)=>String(a.period||"").localeCompare(String(b.period||"")));
+  const openKey=active.length?String(active[active.length-1].period||"").slice(0,7):(p.settings.controlMonth||localISODate().slice(0,7));
+  p.monthly.forEach(r=>{
+   const k=String(r.period||"").slice(0,7);
+   if(r.extraIncomeAmount===undefined)r.extraIncomeAmount=0;if(!r.extraIncomeCurrency)r.extraIncomeCurrency="USD";
+   if(r.snapshotDate===undefined)r.snapshotDate="";if(r.bankFX===undefined)r.bankFX=null;
+   if(r.revolutUSD===undefined)r.revolutUSD=null;if(r.revolutSGD===undefined)r.revolutSGD=null;if(r.sleekUSD===undefined)r.sleekUSD=null;if(r.sleekSGD===undefined)r.sleekSGD=null;
+   if(r.cashAdjustmentUSD===undefined)r.cashAdjustmentUSD=0;if(r.closed===undefined)r.closed=k<openKey;if(r.closedDate===undefined)r.closedDate="";if(r.postDividendCashUSD===undefined)r.postDividendCashUSD=null;
+  });
+  const priorActual=p.actuals.filter(a=>String(a.monthEnd||"").slice(0,7)<openKey).sort((a,b)=>String(b.monthEnd||"").localeCompare(String(a.monthEnd||"")))[0];
+  if(priorActual){p.settings.baselineProfitUSD=Number(priorActual.profit)||0;p.settings.baselineMonth=String(priorActual.monthEnd||"").slice(0,7);}
+  // Legacy workflow had a separate request step. If there is exactly one old historical request, complete it on the following day as an approximate migration date.
+  const pending=p.dividends.filter(d=>String(d.status||"").toLowerCase().startsWith("requested")&&d.requestDate);
+  if(pending.length===1){const d=pending[0];const dt=new Date(String(d.requestDate)+"T00:00:00Z");dt.setUTCDate(dt.getUTCDate()+1);const iso=dt.toISOString().slice(0,10);d.declarationDate=iso;d.cashDate=iso;d.status="Declared/Paid";d.documentation="Complete";d.handling="Direct dividend";d.notes=(d.notes?d.notes+" · ":"")+"Legacy request completed during V6 migration; payment date approximated as the day after request.";}
+  p.settings.controlMonth=openKey;
+ }
+ const firstOpen=[...p.monthly].filter(r=>!r.closed).sort((a,b)=>String(a.period||"").localeCompare(String(b.period||"")))[0];
+ if(firstOpen)p.settings.controlMonth=String(firstOpen.period||"").slice(0,7);else if(!p.settings.controlMonth){const now=localISODate().slice(0,7),keys=p.monthly.map(r=>String(r.period||"").slice(0,7));p.settings.controlMonth=keys.includes(now)?now:(keys.sort().reverse()[0]||now)}
+ p.version=6;return p;
 }
 function loadState(){
  try{const v=localStorage.getItem(APP_KEY);if(v){const p=JSON.parse(v);if(p&&p.settings&&p.monthly&&p.actuals&&p.dividends)return ensureStateDefaults(p)}}catch(e){}
@@ -614,7 +676,7 @@ function calc(){
  const currentAR=useLive?n(state.currentBank.currentAR):n(a.ar);
  const currentAP=useLive?n(state.currentBank.currentAP):n(a.ap);
  const currentDueTo=useLive?n(state.currentBank.currentDueTo):n(a.dueTo);
- const minCash=Math.max(0,currentAP)+Math.max(0,currentDueTo)+companyTaxReserve+n(s.operatingBufferUSD);
+ const minCash=Math.max(0,currentAP)+Math.max(0,currentDueTo)+companyTaxReserve;
  const cashCapacity=Math.max(0,currentCash-minCash);
  const safeBefore=Math.max(0,Math.min(remainingDistributable,cashCapacity));
  const safeAfterPending=Math.min(remainingDistributable-pendingRequests,cashCapacity-pendingRequests);
@@ -657,7 +719,7 @@ function calc(){
 
 function monthKeyFromPeriod(p){return String(p||"").slice(0,7)}
 function monthEndForKey(k){if(!/^\d{4}-\d{2}$/.test(k))return"";const [y,m]=k.split("-").map(Number);return `${y}-${String(m).padStart(2,"0")}-${String(new Date(y,m,0).getDate()).padStart(2,"0")}`}
-function monthRow(key,create=false){let r=state.monthly.find(x=>monthKeyFromPeriod(x.period)===key);if(!r&&create){r={period:key+"-01",days:26,rate:n(state.settings.mogDayRate),service:n(state.settings.serviceFee),recordedRevenue:null,salarySGD:n(state.settings.monthlySalarySGD),salaryUSD:null,salaryPaidDate:"",actualOpexUSD:null,opexForecast:null,notes:""};state.monthly.push(r)}return r}
+function monthRow(key,create=false){let r=state.monthly.find(x=>monthKeyFromPeriod(x.period)===key);if(!r&&create){r={period:key+"-01",days:26,rate:n(state.settings.mogDayRate),service:n(state.settings.serviceFee),recordedRevenue:null,salarySGD:n(state.settings.monthlySalarySGD),salaryUSD:null,salaryPaidDate:"",actualOpexUSD:null,opexForecast:null,extraIncomeAmount:0,extraIncomeCurrency:"USD",snapshotDate:"",bankFX:null,revolutUSD:null,revolutSGD:null,sleekUSD:null,sleekSGD:null,cashAdjustmentUSD:0,closed:false,closedDate:"",postDividendCashUSD:null,notes:""};state.monthly.push(r)}return r}
 function docsForMonth(key,type=""){return (state.documents||[]).filter(d=>d.month===key&&(!type||d.type===type))}
 function latestPendingDividend(){return [...state.dividends].filter(d=>String(d.status||"").toLowerCase().startsWith("requested")).sort((a,b)=>String(b.requestDate||"").localeCompare(String(a.requestDate||"")))[0]||null}
 function renderHomeControl(c){
@@ -723,7 +785,6 @@ function renderDashboard(c){
   <div class="k">31-Aug accountant cash</div><div class="v">${fmtUSD(a.cash)}</div>
   <div class="k">Current A/P + due to shareholder</div><div class="v">(${fmtUSD((state.currentBank?n(state.currentBank.currentAP):n(a.ap))+(state.currentBank?n(state.currentBank.currentDueTo):n(a.dueTo)))})</div>
   <div class="k">Company tax pot — ${fmtPct(state.settings.companyTaxReservePct,0)} of profit</div><div class="v">(${fmtUSD(c.companyTaxReserve)})</div>
-  <div class="k">Operating cash buffer</div><div class="v">(${fmtUSD(state.settings.operatingBufferUSD)})</div>
   <div class="k total">Cash capacity</div><div class="v total">${fmtUSD(c.cashCapacity)}</div>`;
  document.getElementById("personalCards").innerHTML=[
   metric("Salary earned YTD",fmtSGD(c.salYTD),`To ${fmtDate(c.selected)}`),
@@ -764,22 +825,23 @@ function renderMonthSelect(){
 }
 function renderMonthly(){
  const tbody=document.getElementById("monthlyBody");
- tbody.innerHTML=[...state.monthly].sort((a,b)=>a.period.localeCompare(b.period)).map((r,i)=>{
-  const idx=state.monthly.indexOf(r),expected=n(r.days)*n(r.rate)+n(r.service),used=revenueUsed(r);
+ tbody.innerHTML=[...state.monthly].sort((a,b)=>String(a.period||"").localeCompare(String(b.period||""))).map(r=>{
+  const idx=state.monthly.indexOf(r),key=monthKeyFromPeriod(r.period),work=workIncomeUSD(r),extra=extraIncomeUSD(r),cash=monthSnapshotCashUSD(r),derived=monthDerived(key),div=monthDividendUSD(key);
   return `<tr>
    <td>${fmtMonth(r.period)}</td>
-   <td><input type="number" data-midx="${idx}" data-key="days" value="${esc(r.days)}"></td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="rate" value="${esc(r.rate)}"></td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="service" value="${esc(r.service)}"></td>
-   <td class="num">${fmtUSD(expected,2)}</td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="recordedRevenue" value="${r.recordedRevenue??""}"></td>
-   <td class="num"><b>${fmtUSD(used,2)}</b></td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="salarySGD" value="${esc(r.salarySGD)}"></td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="salaryUSD" value="${r.salaryUSD??""}"></td>
-   <td><input type="date" data-midx="${idx}" data-key="salaryPaidDate" value="${r.salaryPaidDate??""}"></td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="actualOpexUSD" value="${r.actualOpexUSD??""}"></td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="opexForecast" value="${r.opexForecast??""}" placeholder="${state.settings.forecastMonthlyOpexUSD}"></td>
-   <td><input type="text" data-midx="${idx}" data-key="notes" value="${esc(r.notes)}"></td>
+   <td><span class="${r.closed?'good':'warn'}">${r.closed?'Closed':'Open'}</span></td>
+   <td><input type="number" data-midx="${idx}" data-key="days" value="${esc(r.days??'')}"></td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="rate" value="${esc(r.rate??state.settings.mogDayRate)}"></td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="service" value="${esc(r.service??state.settings.serviceFee)}"></td>
+   <td class="num"><b>${fmtUSD(work,2)}</b></td>
+   <td class="num">${r.extraIncomeAmount?`${r.extraIncomeCurrency==='SGD'?'S$':'US$'}${fmtNumber(r.extraIncomeAmount,2)}`:'—'}</td>
+   <td class="num">${fmtSGD(r.salarySGD??state.settings.monthlySalarySGD,2)}</td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="salaryUSD" value="${r.salaryUSD??''}"></td>
+   <td class="num">${cash===null?'—':fmtUSD(cash,2)}</td>
+   <td><input type="number" step=".01" data-midx="${idx}" data-key="cashAdjustmentUSD" value="${r.cashAdjustmentUSD??0}"></td>
+   <td class="num">${derived.expenses===null?'—':fmtUSD(derived.expenses,2)}</td>
+   <td class="num">${div?fmtUSD(div,2):'—'}</td>
+   <td><input type="text" data-midx="${idx}" data-key="notes" value="${esc(r.notes||'')}"></td>
    <td><button class="btn small danger" data-delmonth="${idx}">×</button></td>
   </tr>`}).join("");
 }
@@ -847,7 +909,7 @@ const settingDefs={
   ["forecastMonthlyOpexUSD","Forecast monthly non-wage opex — USD","number","0.01"]
  ],
  tax:[
-  ["companyTaxReservePct","Company tax pot — % of company profit","percent","0.01"],["operatingBufferUSD","Operating cash buffer — USD","number","1"],["currentFYTaxPaidUSD","Current FY company tax paid — USD","number","0.01"],
+  ["companyTaxReservePct","Company tax pot — % of company profit","percent","0.01"],["currentFYTaxPaidUSD","Current FY company tax paid — USD","number","0.01"],
   ["corpRebatePct","CIT rebate % (leave 0 unless applicable to this YA)","percent","0.01"],["corpRebateCapSGD","CIT rebate cap — S$","number","1"],["suteEligible","Use start-up tax exemption","checkbox"],
   ["personalTaxPaidSGD","Personal tax already paid / withheld — S$","number","1"],["personalReliefsSGD","Annual personal reliefs/deductions — S$","number","1"]
  ],
@@ -996,6 +1058,113 @@ async function pollCloud(){
  try{const meta=await cloudMetadata();if(meta?.modifiedTime&&cloudBaselineModifiedTime&&meta.modifiedTime!==cloudBaselineModifiedTime){if(cloudDirty){cloudConflict=true;updateCloudUI();}else await loadCloudState();}}catch(e){}
 }
 
+
+/* ===== V6 simplified monthly-close engine ===== */
+let editingClosedMonthKey="";
+function isoAddDays(s,days){if(!s)return"";const d=new Date(s+"T00:00:00Z");d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10)}
+function openMonthKey(){
+ const rows=[...state.monthly].sort((a,b)=>String(a.period||"").localeCompare(String(b.period||"")));
+ const r=rows.find(x=>!x.closed);return r?monthKeyFromPeriod(r.period):(rows.length?monthKeyFromPeriod(rows[rows.length-1].period):localISODate().slice(0,7));
+}
+function ensureOpenMonth(){
+ let key=openMonthKey(),r=monthRow(key,false);
+ if(r&&!r.closed)return key;
+ const rows=[...state.monthly].sort((a,b)=>String(a.period||"").localeCompare(String(b.period||"")));const last=rows[rows.length-1];
+ let d=last?new Date(String(last.period).slice(0,10)+"T00:00:00Z"):new Date();if(last)d.setUTCMonth(d.getUTCMonth()+1);
+ key=`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}`;r=monthRow(key,true);r.closed=false;return key;
+}
+function rowFx(r){
+ const sal=n(r?.salaryUSD);const salarySGD=n(r?.salarySGD,state.settings.monthlySalarySGD);if(sal>0&&salarySGD>0)return salarySGD/sal;
+ return Math.max(n(r?.bankFX,n(state.settings.fx,1.28)),.0001);
+}
+function workIncomeUSD(r){return Math.max(0,n(r?.days))*n(r?.rate,state.settings.mogDayRate)+n(r?.service,state.settings.serviceFee)}
+function extraIncomeUSD(r){const a=Math.max(0,n(r?.extraIncomeAmount));return String(r?.extraIncomeCurrency||"USD")==="SGD"?a/rowFx(r):a}
+function monthSnapshotCashUSD(r){
+ if(!r)return null;const vals=[r.revolutUSD,r.revolutSGD,r.sleekUSD,r.sleekSGD];if(vals.every(v=>v===null||v===undefined||v===""))return null;
+ return n(r.revolutUSD)+n(r.sleekUSD)+(n(r.revolutSGD)+n(r.sleekSGD))/rowFx(r)
+}
+function monthDividendUSD(key){return state.dividends.filter(d=>d.sourceMonth===key&&d.declarationDate).reduce((s,d)=>s+n(d.amountUSD),0)}
+function previousMonthInfo(key){
+ const rows=[...state.monthly].filter(r=>monthKeyFromPeriod(r.period)<key&&r.closed).sort((a,b)=>String(b.period||"").localeCompare(String(a.period||"")));
+ if(rows.length){const r=rows[0],snap=monthSnapshotCashUSD(r),div=monthDividendUSD(monthKeyFromPeriod(r.period));const post=snap!==null?Math.max(0,snap-div):(r.postDividendCashUSD!==null&&r.postDividendCashUSD!==undefined?n(r.postDividendCashUSD):null);if(post!==null)return {cash:post,date:r.closedDate||r.snapshotDate||monthEndForKey(monthKeyFromPeriod(r.period)),key:monthKeyFromPeriod(r.period),source:"month"};}
+ if(state.currentBank&&state.currentBank.snapshotDate){return {cash:currentBankCashUSD(),date:state.currentBank.snapshotDate,key:"legacy",source:"legacy"}}
+ return {cash:null,date:"",key:"",source:"none"}
+}
+function dividendsBetween(start,end,excludeSourceMonth=""){if(!start||!end)return 0;return state.dividends.filter(d=>d.cashDate&&d.cashDate>start&&d.cashDate<=end&&(!excludeSourceMonth||d.sourceMonth!==excludeSourceMonth)).reduce((s,d)=>s+n(d.amountUSD),0)}
+function monthDerived(key){
+ const r=monthRow(key,false);if(!r)return {expenses:null,profit:null,currentCash:null,previous:null,knownDividends:0};
+ const cur=monthSnapshotCashUSD(r),prev=previousMonthInfo(key),snapDate=r.snapshotDate||localISODate();
+ if(cur===null||prev.cash===null)return {expenses:null,profit:null,currentCash:cur,previous:prev,knownDividends:0};
+ const knownDivs=prev.source==="legacy"?dividendsBetween(prev.date,snapDate,key):0;
+ const expenses=prev.cash+workIncomeUSD(r)+extraIncomeUSD(r)+n(r.cashAdjustmentUSD)-n(r.salaryUSD)-knownDivs-cur;
+ const profit=workIncomeUSD(r)+extraIncomeUSD(r)-n(r.salaryUSD)-expenses;
+ return {expenses,profit,currentCash:cur,previous:prev,knownDividends:knownDivs}
+}
+function cumulativeEstimatedProfitUSD(key){
+ let total=n(state.settings.baselineProfitUSD);const base=state.settings.baselineMonth||"0000-00";
+ [...state.monthly].filter(r=>{const k=monthKeyFromPeriod(r.period);return k>base&&k<=key}).sort((a,b)=>String(a.period||"").localeCompare(String(b.period||""))).forEach(r=>{const d=monthDerived(monthKeyFromPeriod(r.period));if(d.profit!==null)total+=d.profit;});return total
+}
+function cumulativeDividendsUSD(key){const end=monthEndForKey(key);return state.dividends.filter(d=>d.declarationDate&&((d.sourceMonth&&d.sourceMonth<=key)||(!d.sourceMonth&&d.declarationDate<=end))).reduce((s,d)=>s+n(d.amountUSD),0)}
+function calcMonthlyControl(key){
+ const r=monthRow(key,false)||{},d=monthDerived(key),profit=cumulativeEstimatedProfitUSD(key),taxReserve=Math.max(0,profit*n(state.settings.companyTaxReservePct,.15)-n(state.settings.currentFYTaxPaidUSD));
+ const divs=cumulativeDividendsUSD(key),profitCapacity=Math.max(0,profit-divs-taxReserve),cashCapacity=d.currentCash===null?0:Math.max(0,d.currentCash-taxReserve),safeAvailable=Math.max(0,Math.min(profitCapacity,cashCapacity));
+ const recommended=Math.max(0,Math.floor(safeAvailable/1000)*1000);return {row:r,derived:d,cumulativeProfit:profit,taxReserve,dividends:divs,profitCapacity,cashCapacity,safeAvailable,recommended}
+}
+function inputVal(id,v){const el=document.getElementById(id);if(el)el.value=v??""}
+function setHomeDisabled(disabled){["homeDays","homeExtraIncome","homeExtraCurrency","homeSalaryUSD","homeRevolutUSD","homeRevolutSGD","homeSleekUSD","homeSleekSGD","homeDividendAmount","saveHomeMonthBtn"].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=disabled})}
+function renderHomeControl(){
+ const sel=document.getElementById("controlMonth");if(!sel)return;ensureOpenMonth();
+ const keys=[...new Set(state.monthly.map(r=>monthKeyFromPeriod(r.period)).filter(Boolean))].sort().reverse(),open=openMonthKey();if(!keys.includes(open))keys.unshift(open);
+ let current=state.settings.controlMonth;if(!current||!keys.includes(current))current=open;state.settings.controlMonth=current;
+ sel.innerHTML=keys.map(k=>`<option value="${k}" ${k===current?"selected":""}>${fmtMonth(k+"-01")}${k===open?' · Current':''}</option>`).join("");
+ const r=monthRow(current,true),closed=!!r.closed,editing=closed&&editingClosedMonthKey===current,readonly=closed&&!editing;
+ document.getElementById("homeMonthHeading").textContent=fmtMonth(current+"-01");document.getElementById("homeMonthSub").textContent=closed?"Closed monthly position and dividend record.":"Enter figures after this month's income is received and salary is paid.";
+ const badge=document.getElementById("homeStatusBadge");badge.textContent=closed?"CLOSED":"OPEN";badge.className="status-pill "+(closed?"":"good");
+ inputVal("homeDays",r.days??26);inputVal("homeExtraIncome",r.extraIncomeAmount||"");inputVal("homeExtraCurrency",r.extraIncomeCurrency||"USD");inputVal("homeSalaryUSD",r.salaryUSD??"");inputVal("homeRevolutUSD",r.revolutUSD??"");inputVal("homeRevolutSGD",r.revolutSGD??"");inputVal("homeSleekUSD",r.sleekUSD??"");inputVal("homeSleekSGD",r.sleekSGD??"");
+ inputVal("homeCalculatedIncome",fmtUSD(workIncomeUSD(r),2));
+ const mc=calcMonthlyControl(current),exp=mc.derived.expenses,cur=mc.derived.currentCash;
+ document.getElementById("homeCurrentCash").textContent=cur===null?"—":fmtUSD(cur,2);document.getElementById("homeAutoExpenses").textContent=exp===null?"—":(exp>=0?fmtUSD(exp,2):`+${fmtUSD(Math.abs(exp),2)} inflow`);document.getElementById("homeTaxReserve").textContent=fmtUSD(mc.taxReserve,2);document.getElementById("homeSafeDividend").textContent=fmtUSD(mc.safeAvailable,2);document.getElementById("homeRecommendedDividend").textContent=fmtUSD(mc.recommended,0);
+ document.getElementById("homeAsAt").textContent=r.snapshotDate?`As at ${fmtDate(r.snapshotDate)}`:"";
+ const prev=mc.derived.previous;if(prev&&prev.cash!==null&&cur!==null){const diff=cur-prev.cash;document.getElementById("homePreviousComparison").textContent=`Cash ${diff>=0?"+":"−"}${fmtUSD(Math.abs(diff),2)} versus previous close · ${exp===null?"Other expenses pending":`Other expenses ${fmtUSD(Math.max(0,exp),2)}`}`;}else document.getElementById("homePreviousComparison").textContent="Previous month comparison will appear once a prior closing cash position is available.";
+ document.getElementById("homeDividendBasis").textContent=`Profit capacity ${fmtUSD(mc.profitCapacity,0)} · cash capacity ${fmtUSD(mc.cashCapacity,0)}`;
+ const actual=monthDividendUSD(current),amt=document.getElementById("homeDividendAmount");if(document.activeElement!==amt)amt.value=closed?(actual||""):(mc.recommended||"");
+ document.getElementById("homeDividendNote").textContent=closed?(actual?`${fmtUSD(actual,2)} was declared and paid when this month was closed.`:"Month closed without a dividend."):`One click records the entered amount as declared, paid and complete, then closes ${fmtMonth(current+"-01")}.`;
+ document.getElementById("homeClosedNote").classList.toggle("hidden",!closed||editing);document.getElementById("homeEditMonthBtn").classList.toggle("hidden",!closed||editing);document.getElementById("homeSaveCorrectionBtn").classList.toggle("hidden",!editing);document.getElementById("homeCreateRequestBtn").classList.toggle("hidden",closed);document.getElementById("saveHomeMonthBtn").classList.toggle("hidden",closed&&!editing);document.getElementById("homeEditHint").textContent=editing?"Editing historical month":`${fmtUSD(n(r.rate,state.settings.mogDayRate),2)}/day + ${fmtUSD(n(r.service,state.settings.serviceFee),0)} service`;
+ setHomeDisabled(readonly);if(editing){document.getElementById("homeDividendAmount").disabled=true;document.getElementById("saveHomeMonthBtn").classList.add("hidden")}
+ document.getElementById("homeMonthStatus").textContent=closed?`Closed ${r.closedDate?fmtDate(r.closedDate):""}`:(mc.derived.currentCash===null?"Enter all four bank balances to calculate the dividend proposal.":(exp!==null&&exp<-.01?"Check additional income or use the Operations adjustment: cash reconciliation currently shows an unexplained inflow.":"Ready to review the dividend proposal."));
+}
+function captureHomeMonth(){
+ const key=state.settings.controlMonth,r=monthRow(key,true);r.days=Math.max(0,n(document.getElementById("homeDays").value));r.rate=n(r.rate,state.settings.mogDayRate);r.service=n(r.service,state.settings.serviceFee);r.extraIncomeAmount=Math.max(0,n(document.getElementById("homeExtraIncome").value));r.extraIncomeCurrency=document.getElementById("homeExtraCurrency").value||"USD";r.salarySGD=n(state.settings.monthlySalarySGD);r.salaryUSD=maybeNum(document.getElementById("homeSalaryUSD").value);if(!r.closed||!r.snapshotDate)r.snapshotDate=localISODate();r.bankFX=rowFx(r);r.revolutUSD=maybeNum(document.getElementById("homeRevolutUSD").value);r.revolutSGD=maybeNum(document.getElementById("homeRevolutSGD").value);r.sleekUSD=maybeNum(document.getElementById("homeSleekUSD").value);r.sleekSGD=maybeNum(document.getElementById("homeSleekSGD").value);r.recordedRevenue=workIncomeUSD(r);r.actualOpexUSD=null;return r
+}
+function saveHomeMonth(){captureHomeMonth();document.getElementById("homeMonthSaveStatus").textContent="Saved";renderAll()}
+function saveHomeBank(){saveHomeMonth()}
+function createHomeDividendRequest(){
+ const key=state.settings.controlMonth,r=captureHomeMonth();if(r.closed){alert("This month is already closed.");return}
+ const required=[r.salaryUSD,r.revolutUSD,r.revolutSGD,r.sleekUSD,r.sleekSGD];if(required.some(v=>v===null||v===undefined)){alert("Enter salary paid and all four bank balances first.");return}
+ const mc=calcMonthlyControl(key),amount=n(document.getElementById("homeDividendAmount").value);if(mc.derived.expenses!==null&&mc.derived.expenses<-.01){alert("Cash reconciliation shows an unexplained inflow. Enter the additional NES payment or use the cash adjustment in Monthly Operations before declaring a dividend.");return}if(amount<0){alert("Dividend cannot be negative.");return}if(amount>mc.safeAvailable+.01){alert(`The entered dividend exceeds the current available amount of ${fmtUSD(mc.safeAvailable,2)}.`);return}
+ const today=localISODate();if(amount>0){state.dividends.push({id:"d"+Date.now(),period:dividendPeriodFromDate(today),sourceMonth:key,requestDate:today,declarationDate:today,cashDate:today,amountUSD:amount,fx:rowFx(r),status:"Declared/Paid",documentation:"Complete",reference:"",handling:"Direct dividend",notes:`Declared and paid from ${fmtMonth(key+"-01")} monthly close`})}
+ r.closed=true;r.closedDate=today;r.postDividendCashUSD=Math.max(0,n(mc.derived.currentCash)-amount);editingClosedMonthKey="";
+ // Advance to the next month and keep contract defaults only; balances stay blank for a clean monthly entry.
+ const [y,m]=key.split("-").map(Number),d=new Date(Date.UTC(y,m,1)),next=`${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}`;const nr=monthRow(next,true);nr.closed=false;nr.rate=n(state.settings.mogDayRate);nr.service=n(state.settings.serviceFee);nr.salarySGD=n(state.settings.monthlySalarySGD);state.settings.controlMonth=next;document.getElementById("homeMonthSaveStatus").textContent=amount>0?`Dividend ${fmtUSD(amount,0)} recorded and month closed.`:"Month closed.";renderAll()
+}
+function renderProposal(){
+ const key=state.settings.controlMonth||openMonthKey(),mc=calcMonthlyControl(key),x=Math.max(0,n(document.getElementById("proposedDividend").value)),post=Math.max(0,(mc.derived.currentCash||0)-x),head=mc.safeAvailable-x;
+ document.getElementById("postDividendCash").textContent=fmtUSD(post);document.getElementById("proposalStatusText").textContent=head>=0?"SAFE":"ABOVE LIMIT";document.getElementById("proposalHeadroom").textContent=head>=0?`${fmtUSD(head)} headroom remains`:`${fmtUSD(Math.abs(head))} above calculated capacity`;document.getElementById("proposalStatus").className="proposal-result "+(head>=0?"good":"bad");document.getElementById("proposalCash").className="proposal-result "+(head>=0?"good":"bad");
+}
+function renderDashboard(c){
+ const key=state.settings.controlMonth||openMonthKey(),mc=calcMonthlyControl(key),r=mc.row,cur=mc.derived.currentCash;
+ document.getElementById("dashboardTop").innerHTML=[metric("Selected month",fmtMonth(key+"-01"),r.closed?"Closed":"Current open month"),metric("Estimated cumulative profit",fmtUSD(mc.cumulativeProfit),"Baseline Sleek profit plus monthly cash reconciliations"),metric("Current cash",cur===null?"—":fmtUSD(cur),"Four company bank balances converted to US$"),metric("Dividends logged",fmtUSD(mc.dividends),"Includes dividends allocated to each monthly close")].join("");
+ document.getElementById("safeDividend").textContent=fmtUSD(mc.safeAvailable);document.getElementById("safeDividendSub").textContent=`Cash capacity ${fmtUSD(mc.cashCapacity)} · profit capacity ${fmtUSD(mc.profitCapacity)}`;
+ const md=monthDividendUSD(key);document.getElementById("potentialDividend").textContent=fmtUSD(md);document.getElementById("pendingDividendSub").textContent=md?"Dividend recorded for this monthly close.":"No dividend recorded for this monthly close yet.";
+ document.getElementById("minCashRetain").textContent=fmtUSD(Math.max(0,mc.safeAvailable-md));document.getElementById("remainingCapacitySub").textContent="Calculated remaining capacity after the month's logged dividend.";
+ document.getElementById("dividendBreakdown").innerHTML=`<div class="k">Estimated cumulative profit</div><div class="v">${fmtUSD(mc.cumulativeProfit)}</div><div class="k">Dividends logged</div><div class="v">(${fmtUSD(mc.dividends)})</div><div class="k">15% company-tax reserve</div><div class="v">(${fmtUSD(mc.taxReserve)})</div><div class="k">Profit capacity</div><div class="v"><b>${fmtUSD(mc.profitCapacity)}</b></div><div class="k">Current cash</div><div class="v">${cur===null?'—':fmtUSD(cur)}</div><div class="k">Cash capacity after tax reserve</div><div class="v"><b>${fmtUSD(mc.cashCapacity)}</b></div><div class="k total">Available dividend</div><div class="v total"><b>${fmtUSD(mc.safeAvailable)}</b></div>`;
+ document.getElementById("personalCards").innerHTML=c&&!c.missing?[metric("Salary YTD",fmtSGD(c.salYTD),"Salary accounting basis"),metric("Personal tax accrued",fmtSGD(c.personalYTD),"Planning estimate"),metric("Forecast annual personal tax",fmtSGD(c.personalForecast),"Before entered reliefs"),metric("Personal reserve outstanding",fmtSGD(c.personalReserve),"Separate from company dividend")].join(""):metric("Personal tax","—","No Sleek snapshot loaded");
+ document.getElementById("companyTaxCards").innerHTML=[metric("15% cash reserve",fmtUSD(mc.taxReserve),"Primary company-tax reserve used by Home"),metric("Estimated company tax",c&&!c.missing?fmtSGD(c.companyTax):"—","Detailed estimate from latest Sleek snapshot"),metric("Reserve rate",`${(n(state.settings.companyTaxReservePct)*100).toFixed(0)}%`,"No separate operating buffer"),metric("Current month other expenses",mc.derived.expenses===null?"—":fmtUSD(mc.derived.expenses),"Automatically reconciled from cash movement")].join("");
+ document.getElementById("reconciliation").innerHTML=`<div class="notice"><b>V6 control model:</b> Home uses monthly bank balances, earned income, salary paid and the 15% tax reserve. Sleek Accounts remain the detailed accounting reference and are no longer required for the monthly dividend workflow.</div>`;renderProposal();
+}
+function renderAll(){
+ const c=calc();renderMonthSelect();if(!c.missing){renderDashboard(c);renderDividends(c);renderCompare(c)}renderHomeControl();renderMonthly();renderActuals();renderSettings();renderStorage();document.getElementById("monthPill").textContent=fmtMonth((state.settings.controlMonth||openMonthKey())+"-01");saveState();
+}
 function showPage(name){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  document.querySelectorAll(".navbtn").forEach(b=>b.classList.remove("active"));
@@ -1020,11 +1189,14 @@ document.getElementById("googleSignOutBtn").addEventListener("click",disconnectG
 document.getElementById("cloudSaveNowBtn").addEventListener("click",manualSaveCloud);
 document.getElementById("cloudReloadBtn").addEventListener("click",manualReloadCloud);
 document.getElementById("dashboardMonth").addEventListener("change",e=>{state.settings.selectedMonthEnd=e.target.value;renderAll()});
-document.getElementById("controlMonth").addEventListener("change",e=>{state.settings.controlMonth=e.target.value;renderAll()});
+document.getElementById("controlMonth").addEventListener("change",e=>{editingClosedMonthKey="";state.settings.controlMonth=e.target.value;renderAll()});
 document.getElementById("saveHomeMonthBtn").addEventListener("click",saveHomeMonth);
 document.getElementById("saveHomeBankBtn").addEventListener("click",saveHomeBank);
 document.getElementById("homeCreateRequestBtn").addEventListener("click",createHomeDividendRequest);
 document.getElementById("homeDeclarePendingBtn").addEventListener("click",()=>{const p=latestPendingDividend();if(p)declareDividend(state.dividends.indexOf(p))});
+document.getElementById("homeEditMonthBtn").addEventListener("click",()=>{const key=state.settings.controlMonth,r=monthRow(key,false);if(r&&r.closed){editingClosedMonthKey=key;renderAll()}});
+document.getElementById("homeSaveCorrectionBtn").addEventListener("click",()=>{const key=state.settings.controlMonth,r=captureHomeMonth();r.closed=true;r.postDividendCashUSD=Math.max(0,n(monthSnapshotCashUSD(r))-monthDividendUSD(key));editingClosedMonthKey="";document.getElementById("homeMonthSaveStatus").textContent="Correction saved";renderAll()});
+["homeDays","homeExtraIncome","homeExtraCurrency","homeSalaryUSD","homeRevolutUSD","homeRevolutSGD","homeSleekUSD","homeSleekSGD"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{if(!monthRow(state.settings.controlMonth,false)?.closed||editingClosedMonthKey===state.settings.controlMonth){captureHomeMonth();renderHomeControl()}}));
 document.getElementById("homeDocumentList").addEventListener("click",e=>{if(e.target.dataset.docopen)openArchivedDocument(e.target.dataset.docopen).catch(err=>alert("Could not open document: "+err.message))});
 document.getElementById("homeBankStatementInput").addEventListener("change",async e=>{const files=[...e.target.files];e.target.value="";if(!files.length)return;if(!accessToken){alert("Connect Google Drive first, then select the statement again.");connectGoogle();return}try{for(const f of files)await archiveMonthlyDocument(f,"bank",state.settings.controlMonth)}catch(err){alert("Could not archive bank statement: "+err.message)}});
 document.getElementById("homeManagementInput").addEventListener("change",async e=>{const file=e.target.files[0];e.target.value="";if(!file)return;if(!accessToken){alert("Connect Google Drive first, then select the management accounts again.");connectGoogle();return}try{await archiveMonthlyDocument(file,"management",state.settings.controlMonth);if(file.name.toLowerCase().endsWith(".xlsx"))await prepareSleekImport(file)}catch(err){alert("Could not process management accounts: "+err.message)}});
@@ -1044,7 +1216,7 @@ document.getElementById("addMonthBtn").addEventListener("click",()=>{
  const sorted=[...state.monthly].sort((a,b)=>a.period.localeCompare(b.period)),last=sorted[sorted.length-1];
  const d=last?new Date(last.period+"T00:00:00"):new Date();d.setMonth(d.getMonth()+1);
  const p=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-01`;
- state.monthly.push({period:p,days:26,rate:n(state.settings.mogDayRate),service:n(state.settings.serviceFee),recordedRevenue:null,salarySGD:n(state.settings.monthlySalarySGD),salaryUSD:null,salaryPaidDate:"",actualOpexUSD:null,opexForecast:null,notes:"Forecast"});
+ state.monthly.push({period:p,days:26,rate:n(state.settings.mogDayRate),service:n(state.settings.serviceFee),recordedRevenue:null,salarySGD:n(state.settings.monthlySalarySGD),salaryUSD:null,salaryPaidDate:"",actualOpexUSD:null,opexForecast:null,extraIncomeAmount:0,extraIncomeCurrency:"USD",snapshotDate:"",bankFX:null,revolutUSD:null,revolutSGD:null,sleekUSD:null,sleekSGD:null,cashAdjustmentUSD:0,closed:false,closedDate:"",postDividendCashUSD:null,notes:""});
  renderAll();
 });
 
@@ -1070,7 +1242,7 @@ document.getElementById("actualForm").addEventListener("submit",e=>{
 });
 document.getElementById("actualsBody").addEventListener("click",e=>{
  if(e.target.dataset.editactual!==undefined)openActual(Number(e.target.dataset.editactual));
- if(e.target.dataset.selectactual){state.settings.selectedMonthEnd=e.target.dataset.selectactual;showPage("dashboard");renderAll()}
+ if(e.target.dataset.selectactual){state.settings.selectedMonthEnd=e.target.dataset.selectactual;showPage("overview");renderAll()}
  if(e.target.dataset.delactual!==undefined&&confirm("Delete this snapshot?")){state.actuals.splice(Number(e.target.dataset.delactual),1);if(state.actuals.length)state.settings.selectedMonthEnd=[...state.actuals].sort((a,b)=>b.monthEnd.localeCompare(a.monthEnd))[0].monthEnd;renderAll()}
 });
 
@@ -1078,17 +1250,17 @@ const divFields=[
  ["period","Dividend period","text"],["requestDate","Request date","date"],["declarationDate","Declaration date","date"],["cashDate","Cash payment date","date"],["amountUSD","Amount — USD","number"],["fx","FX S$/US$","number"],
  ["status","Status","text"],["documentation","Documentation","text"],["reference","Sleek reference","text"],["handling","Cash / loan handling","text","span2"],["notes","Notes","text","span2"]
 ];
-const requestFields=[["requestDate","Request date","date"],["amountUSD","Requested amount — USD","number"],["fx","FX S$/US$","number"],["notes","Notes","text","span2"]];
+const requestFields=[["declarationDate","Declaration / payment date","date"],["amountUSD","Dividend amount — USD","number"],["fx","FX S$/US$","number"],["notes","Notes","text","span2"]];
 function dividendFieldHtml(fields,d){
  return fields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" step="${t==="number"?".01":""}" value="${esc(d[k]??"")}"></div>`).join("");
 }
 function openDividend(idx=null){
  editingDividend=idx;
  if(idx===null){
-  const today=localISODate(),c=calc(),safeAvailable=c.missing?0:Math.max(0,c.safeAfterPending);
-  const d={requestDate:today,amountUSD:0,fx:n(state.settings.fx),notes:""};
-  document.getElementById("dividendModalTitle").textContent="Create dividend request";
-  document.getElementById("dividendFormFields").innerHTML=`<div class="notice span2">Current safe amount available for a new request: <b>${fmtUSD(safeAvailable,2)}</b>. The app will not create a request above this limit.</div>`+dividendFieldHtml(requestFields,d);
+  const today=localISODate(),key=openMonthKey(),mc=calcMonthlyControl(key),safeAvailable=Math.max(0,mc.safeAvailable||0);
+  const d={declarationDate:today,amountUSD:0,fx:n(state.settings.fx),notes:""};
+  document.getElementById("dividendModalTitle").textContent="Record dividend";
+  document.getElementById("dividendFormFields").innerHTML=`<div class="notice span2">Current calculated dividend capacity: <b>${fmtUSD(safeAvailable,2)}</b>. A saved entry is immediately treated as declared, paid and complete.</div>`+dividendFieldHtml(requestFields,d);
  }else{
   const d=state.dividends[idx];
   document.getElementById("dividendModalTitle").textContent="Edit dividend";
@@ -1100,12 +1272,12 @@ document.getElementById("newDividendBtn").addEventListener("click",()=>openDivid
 document.getElementById("dividendForm").addEventListener("submit",e=>{
  e.preventDefault();const fd=new FormData(e.target);
  if(editingDividend===null){
-  const requestDate=fd.get("requestDate"),amountUSD=n(fd.get("amountUSD")),fx=n(fd.get("fx"));
-  if(!requestDate){alert("Request date is required.");return}
-  if(amountUSD<=0){alert("Enter a dividend request amount greater than zero.");return}
-  const c=calc(),safeAvailable=c.missing?0:Math.max(0,c.safeAfterPending);
-  if(amountUSD>safeAvailable+.01){alert(`This request is above the current safe limit of ${fmtUSD(safeAvailable,2)}.`);return}
-  const obj={id:"d"+Date.now(),period:dividendPeriodFromDate(requestDate),requestDate,declarationDate:"",cashDate:"",amountUSD,fx,status:"Requested",documentation:"Pending",reference:"",handling:"Requested; not yet paid",notes:fd.get("notes")||""};
+  const declarationDate=fd.get("declarationDate"),amountUSD=n(fd.get("amountUSD")),fx=n(fd.get("fx"));
+  if(!declarationDate){alert("Declaration date is required.");return}
+  if(amountUSD<=0){alert("Enter a dividend amount greater than zero.");return}
+  const key=openMonthKey(),mc=calcMonthlyControl(key),safeAvailable=Math.max(0,mc.safeAvailable||0);
+  if(amountUSD>safeAvailable+.01){alert(`This dividend is above the current calculated capacity of ${fmtUSD(safeAvailable,2)}.`);return}
+  const obj={id:"d"+Date.now(),period:dividendPeriodFromDate(declarationDate),sourceMonth:key,requestDate:declarationDate,declarationDate,cashDate:declarationDate,amountUSD,fx,status:"Declared/Paid",documentation:"Complete",reference:"",handling:"Direct dividend",notes:fd.get("notes")||"Recorded directly in V6"};
   state.dividends.push(obj);
  }else{
   const obj={id:state.dividends[editingDividend].id};
@@ -1269,7 +1441,7 @@ async function prepareSleekImport(file){
 document.getElementById("xlsxInput").addEventListener("change",async e=>{const file=e.target.files[0];e.target.value="";if(!file)return;await prepareSleekImport(file).catch(()=>{});});
 document.getElementById("confirmXlsxImport").addEventListener("click",()=>{
  if(!pendingXlsx)return;const i=state.actuals.findIndex(a=>a.monthEnd===pendingXlsx.monthEnd);if(i>=0)state.actuals[i]=pendingXlsx;else state.actuals.push(pendingXlsx);
- state.settings.selectedMonthEnd=pendingXlsx.monthEnd;state.settings.controlMonth=String(pendingXlsx.monthEnd).slice(0,7);pendingXlsx=null;document.getElementById("importPreviewModal").classList.add("hidden");renderAll();showPage("dashboard");
+ state.settings.selectedMonthEnd=pendingXlsx.monthEnd;state.settings.controlMonth=String(pendingXlsx.monthEnd).slice(0,7);pendingXlsx=null;document.getElementById("importPreviewModal").classList.add("hidden");renderAll();showPage("overview");
 });
 
 renderAll();

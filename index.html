@@ -359,16 +359,16 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
         <div class="home-form-grid">
           <div class="field"><label>Days worked</label><input id="homeDays" type="number" min="0" step="1"></div>
           <div class="field"><label>Calculated work income — US$</label><input id="homeCalculatedIncome" type="text" readonly></div>
-          <div class="field extra-income-field"><label>Extra NES reimbursement / payment</label><div class="money-combo"><input id="homeExtraIncome" type="number" min="0" step="0.01" placeholder="0.00"><select id="homeExtraCurrency" aria-label="Additional NES payment currency"><option value="USD">USD</option><option value="SGD">SGD</option></select></div></div>
-          <div class="field"><label>Salary paid — US$</label><input id="homeSalaryUSD" type="number" min="0" step="0.01"></div>
+          <div class="field extra-income-field"><label>Extra NES reimbursement / payment</label><div class="money-combo"><input id="homeExtraIncome" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"><select id="homeExtraCurrency" aria-label="Additional NES payment currency"><option value="USD">USD</option><option value="SGD">SGD</option></select></div></div>
+          <div class="field"><label>Salary paid — US$</label><input id="homeSalaryUSD" type="number" inputmode="decimal" min="0" step="0.01"></div>
         </div>
 
         <div class="mini-section-label">Closing bank balances</div>
         <div class="bank-grid">
-          <div class="field"><label>Revolut USD</label><input id="homeRevolutUSD" type="number" min="0" step="0.01"></div>
-          <div class="field"><label>Revolut SGD</label><input id="homeRevolutSGD" type="number" min="0" step="0.01"></div>
-          <div class="field"><label>Sleek USD</label><input id="homeSleekUSD" type="number" min="0" step="0.01"></div>
-          <div class="field"><label>Sleek SGD</label><input id="homeSleekSGD" type="number" min="0" step="0.01"></div>
+          <div class="field"><label>Revolut USD</label><input id="homeRevolutUSD" type="number" inputmode="decimal" min="0" step="0.01"></div>
+          <div class="field"><label>Revolut SGD</label><input id="homeRevolutSGD" type="number" inputmode="decimal" min="0" step="0.01"></div>
+          <div class="field"><label>Sleek USD</label><input id="homeSleekUSD" type="number" inputmode="decimal" min="0" step="0.01"></div>
+          <div class="field"><label>Sleek SGD</label><input id="homeSleekSGD" type="number" inputmode="decimal" min="0" step="0.01"></div>
         </div>
 
         <div class="home-input-actions">
@@ -391,7 +391,7 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
 
         <div class="dividend-box">
           <div class="dividend-proposal-row"><div><span class="mini-label">RECOMMENDED</span><strong id="homeRecommendedDividend">—</strong></div><div class="small muted" id="homeDividendBasis"></div></div>
-          <div class="field"><label>Actual dividend to declare — US$</label><input id="homeDividendAmount" type="number" min="0" step="1000"></div>
+          <div class="field"><label>Actual dividend to declare — US$</label><input id="homeDividendAmount" type="number" inputmode="decimal" min="0" step="0.01"></div>
           <button class="btn green full-action" id="homeCreateRequestBtn">Declare &amp; close month</button>
           <div id="homeDividendNote" class="small muted"></div>
         </div>
@@ -433,7 +433,7 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
     <div class="card">
       <h3 style="margin-top:0">Try a proposed dividend</h3>
       <div class="proposal">
-        <div class="field"><label>Additional proposed dividend (USD)</label><input id="proposedDividend" type="number" min="0" step="1000"></div>
+        <div class="field"><label>Additional proposed dividend (USD)</label><input id="proposedDividend" type="number" inputmode="decimal" min="0" step="0.01"></div>
         <div class="proposal-result" id="proposalCash"><div class="small">Post-dividend cash</div><div class="big-number" id="postDividendCash">—</div></div>
         <div class="proposal-result" id="proposalStatus"><div class="small">Status</div><div style="font-size:22px;font-weight:800" id="proposalStatusText">—</div><div class="small" id="proposalHeadroom"></div></div>
       </div>
@@ -835,14 +835,14 @@ function renderMonthly(){
    <td>${fmtMonth(r.period)}</td>
    <td><span class="${r.closed?'good':'warn'}">${r.closed?'Closed':'Open'}</span></td>
    <td><input type="number" data-midx="${idx}" data-key="days" value="${esc(r.days??'')}"></td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="rate" value="${esc(r.rate??state.settings.mogDayRate)}"></td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="service" value="${esc(r.service??state.settings.serviceFee)}"></td>
+   <td><input type="number" inputmode="decimal" step=".01" data-midx="${idx}" data-key="rate" value="${esc(r.rate??state.settings.mogDayRate)}"></td>
+   <td><input type="number" inputmode="decimal" step=".01" data-midx="${idx}" data-key="service" value="${esc(r.service??state.settings.serviceFee)}"></td>
    <td class="num"><b>${fmtUSD(work,2)}</b></td>
-   <td class="num">${r.extraIncomeAmount?`${r.extraIncomeCurrency==='SGD'?'S$':'US$'}${fmtNumber(r.extraIncomeAmount,2)}`:'—'}</td>
+   <td class="num">${r.extraIncomeAmount?(r.extraIncomeCurrency==='SGD'?fmtSGD(r.extraIncomeAmount,2):fmtUSD(r.extraIncomeAmount,2)):'—'}</td>
    <td class="num">${fmtSGD(r.salarySGD??state.settings.monthlySalarySGD,2)}</td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="salaryUSD" value="${r.salaryUSD??''}"></td>
+   <td><input type="number" inputmode="decimal" step=".01" data-midx="${idx}" data-key="salaryUSD" value="${r.salaryUSD??''}"></td>
    <td class="num">${cash===null?'—':fmtUSD(cash,2)}</td>
-   <td><input type="number" step=".01" data-midx="${idx}" data-key="cashAdjustmentUSD" value="${r.cashAdjustmentUSD??0}"></td>
+   <td><input type="number" inputmode="decimal" step=".01" data-midx="${idx}" data-key="cashAdjustmentUSD" value="${r.cashAdjustmentUSD??0}"></td>
    <td class="num">${derived.expenses===null?'—':fmtUSD(derived.expenses,2)}</td>
    <td class="num">${div?fmtUSD(div,2):'—'}</td>
    <td><input type="text" data-midx="${idx}" data-key="notes" value="${esc(r.notes||'')}"></td>
@@ -926,7 +926,7 @@ const settingDefs={
 function settingField(def){
  const [key,label,type,step]=def,val=state.settings[key];
  if(type==="checkbox")return `<div class="field"><label>${label}</label><select data-setting="${key}"><option value="true" ${val?"selected":""}>Yes</option><option value="false" ${!val?"selected":""}>No</option></select></div>`;
- if(type==="percent")return `<div class="field"><label>${label}</label><input data-setting="${key}" type="number" step="${step||.01}" value="${n(val)*100}"><div class="small muted">Enter as %</div></div>`;
+ if(type==="percent")return `<div class="field"><label>${label}</label><input data-setting="${key}" type="number" inputmode="decimal" step="${step||.01}" value="${n(val)*100}"><div class="small muted">Enter as %</div></div>`;
  return `<div class="field"><label>${label}</label><input data-setting="${key}" type="${type}" ${step?`step="${step}"`:""} value="${esc(val)}"></div>`;
 }
 function renderSettings(){
@@ -1114,7 +1114,11 @@ function calcMonthlyControl(key){
  const divs=cumulativeDividendsUSD(key),profitCapacity=Math.max(0,profit-divs-taxReserve),cashCapacity=d.currentCash===null?0:Math.max(0,d.currentCash-taxReserve),safeAvailable=Math.max(0,Math.min(profitCapacity,cashCapacity));
  const recommended=Math.max(0,Math.floor(safeAvailable/1000)*1000);return {row:r,derived:d,cumulativeProfit:profit,taxReserve,dividends:divs,profitCapacity,cashCapacity,safeAvailable,recommended}
 }
-function inputVal(id,v){const el=document.getElementById(id);if(el)el.value=v??""}
+function inputVal(id,v){
+ const el=document.getElementById(id);
+ // Preserve in-progress decimal entry (for example "123.") during live recalculation.
+ if(el&&document.activeElement!==el)el.value=v??"";
+}
 function setHomeDisabled(disabled){["homeDays","homeExtraIncome","homeExtraCurrency","homeSalaryUSD","homeRevolutUSD","homeRevolutSGD","homeSleekUSD","homeSleekSGD","homeDividendAmount","saveHomeMonthBtn"].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=disabled})}
 function renderHomeControl(){
  const sel=document.getElementById("controlMonth");if(!sel)return;ensureOpenMonth();
@@ -1233,7 +1237,7 @@ function openActual(idx=null,preset=null){
  editingActual=idx;
  const a=preset||((idx===null)?{monthEnd:"",sales:0,expenses:0,wages:0,profit:0,cash:0,ar:0,ap:0,dueFrom:0,dueTo:0,dividendsYTD:0,retainedEarnings:0,incomeTaxPayable:0,taxAdjustments:0,currentTaxPaid:0,source:""}:state.actuals[idx]);
  document.getElementById("actualModalTitle").textContent=idx===null?"Add management-account snapshot":"Edit management-account snapshot";
- document.getElementById("actualFormFields").innerHTML=actualFields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" step="${t==="number"?".01":""}" value="${esc(a[k]??"")}"></div>`).join("");
+ document.getElementById("actualFormFields").innerHTML=actualFields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" ${t==="number"?'inputmode="decimal"':""} step="${t==="number"?".01":""}" value="${esc(a[k]??"")}"></div>`).join("");
  document.getElementById("actualModal").classList.remove("hidden");
 }
 document.getElementById("newActualBtn").addEventListener("click",()=>openActual());
@@ -1256,7 +1260,7 @@ const divFields=[
 ];
 const requestFields=[["declarationDate","Declaration / payment date","date"],["amountUSD","Dividend amount — USD","number"],["fx","FX S$/US$","number"],["notes","Notes","text","span2"]];
 function dividendFieldHtml(fields,d){
- return fields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" step="${t==="number"?".01":""}" value="${esc(d[k]??"")}"></div>`).join("");
+ return fields.map(([k,l,t,cls])=>`<div class="field ${cls||""}"><label>${l}</label><input name="${k}" type="${t}" ${t==="number"?'inputmode="decimal"':""} step="${t==="number"?".01":""}" value="${esc(d[k]??"")}"></div>`).join("");
 }
 function openDividend(idx=null){
  editingDividend=idx;

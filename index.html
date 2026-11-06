@@ -307,6 +307,8 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
 @media(max-width:560px){.compact-home{padding:12px}.control-head{align-items:stretch}.month-tools{justify-content:stretch}.month-tools .control-month{flex:1;min-width:0}.home-form-grid,.bank-grid,.standing-grid{grid-template-columns:1fr 1fr}.home-input-panel,.home-result-panel{padding:12px}.dividend-proposal-row{align-items:flex-start}.dividend-proposal-row strong{font-size:24px}}
 @media(max-width:380px){.home-form-grid,.bank-grid,.standing-grid{grid-template-columns:1fr}.money-combo{grid-template-columns:minmax(0,1fr) 72px}}
 
+.personal-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:760px){.personal-form{grid-template-columns:1fr}}
 </style>
 <meta name="theme-color" content="#112D45">
 <link rel="manifest" href="./manifest.webmanifest">
@@ -323,6 +325,7 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
     <button class="navbtn" data-page="accountant"><span class="icon">▥</span>Sleek Accounts</button>
     <button class="navbtn" data-page="overview"><span class="icon">◎</span>Finance Overview</button>
     <button class="navbtn" data-page="dividends"><span class="icon">◈</span>Dividends</button>
+    <button class="navbtn" data-page="tax"><span class="icon">＄</span>Tax</button>
     <button class="navbtn" data-page="compare"><span class="icon">⇄</span>NES vs MOG</button>
     <button class="navbtn" data-page="settings"><span class="icon">⚙</span>Settings</button>
     <button class="navbtn" data-page="backup"><span class="icon">⇩</span>Backup & Data</button>
@@ -446,7 +449,7 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
     </div>
   </div>
 
-  <div class="section-title"><h3>Personal tax — 2026 income / YA 2027</h3><small>Planning estimate before personal reliefs unless entered in Settings</small></div>
+  <div class="section-title"><h3>Personal tax — 2026 income / YA 2027</h3><small>Manage income, reliefs and savings in Tax → Personal tax</small></div>
   <div class="grid grid-4" id="personalCards"></div>
 
   <div class="section-title"><h3>Company tax — FY Mar 2026 to Feb 2027</h3><small>Actual tax estimate shown separately; cash reserve rule keeps 15% of company profit</small></div>
@@ -484,6 +487,41 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
   </tr></thead><tbody id="dividendBody"></tbody></table></div>
 </section>
 
+<section class="page" id="page-tax">
+  <div class="page-head"><div><h2>Tax</h2><p>Company and personal tax, tracked separately</p></div><button class="btn green" id="personalSaveBtn">Save personal tax</button></div>
+  <div class="section-title" style="margin-top:0"><h3>Company tax</h3><small id="taxCompanyPeriod"></small></div>
+  <div class="grid grid-3" id="taxCompanyCards"></div>
+  <p class="small muted" id="taxCompanyNote"></p>
+  <div class="section-title"><h3>Personal tax — 2026 income / YA 2027</h3><small>Paid from your personal account</small></div>
+  <div class="notice" style="margin-bottom:16px">Your personal tax is paid from your personal account. This tracker does not deduct it from company cash, profit or available dividend. The 31 December target is when to have the money ready; your IRAS bill determines the payment deadline.</div>
+  <div class="grid grid-4" id="personalTaxResults" aria-live="polite"></div>
+  <p class="small muted" id="personalTaxStatus" role="status"></p>
+  <div class="grid grid-2" style="margin-top:18px">
+    <div class="card"><h3 style="margin-top:0">Income for January–December 2026</h3><div class="form-grid personal-form">
+      <div class="field span2"><label for="ptSalary">Monthly salary — S$</label><input id="ptSalary" type="number" inputmode="decimal" min="0" step="0.01"></div>
+      <div class="field"><label for="ptSalaryStart">First salary month</label><select id="ptSalaryStart"></select></div>
+      <div class="field"><label for="ptSalaryEnd">Last salary month</label><select id="ptSalaryEnd"></select></div>
+      <div class="field"><label for="ptNesUSD">Additional NES income — US$</label><input id="ptNesUSD" type="number" inputmode="decimal" min="0" step="0.01"></div>
+      <div class="field"><label for="ptNesMonth">NES income month</label><select id="ptNesMonth"></select></div>
+      <div class="field"><label for="ptNesFX">NES planning FX — S$ per US$1</label><input id="ptNesFX" type="number" inputmode="decimal" min="0.000001" step="0.000001"></div>
+      <div class="field"><label for="ptNesSGD">Exact NES taxable amount — S$ (optional)</label><input id="ptNesSGD" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Use the tax statement figure"></div>
+      <div class="span2 small muted">The exact SGD amount overrides the planning conversion. This rate is saved with the personal plan; later changes to company FX do not change it. Enter additional personal earnings only, excluding company invoice income and dividends.</div>
+    </div></div>
+    <div class="card"><h3 style="margin-top:0">Tax profile & money already covered</h3><div class="form-grid personal-form">
+      <div class="field span2"><label for="ptResident">2026 tax residence</label><select id="ptResident"><option value="">Confirm tax residence</option><option value="SG">Singapore tax resident</option><option value="other">Other / needs review</option></select></div>
+      <div class="field"><label for="ptAge">Age on 31 December 2026</label><input id="ptAge" type="number" inputmode="numeric" min="0" max="120" step="1"></div>
+      <div class="field"><label for="ptAsOf">Income earned through</label><select id="ptAsOf"></select></div>
+      <div class="field span2"><label for="ptReliefs">Other eligible annual personal reliefs — S$</label><input id="ptReliefs" type="number" inputmode="decimal" min="0" step="0.01"><div class="small muted">Exclude standard earned-income relief, which is added automatically. Include only eligible reliefs; total personal reliefs are capped at S$80,000.</div></div>
+      <div class="field"><label for="ptPaid">2026-income tax paid / withheld — S$</label><input id="ptPaid" type="number" inputmode="decimal" min="0" step="0.01"></div>
+      <div class="field"><label for="ptSaved">Cash already set aside — S$</label><input id="ptSaved" type="number" inputmode="decimal" min="0" step="0.01" placeholder="Enter 0 if none"></div>
+      <div class="span2 small muted">Record both amounts as at the selected month. Cash set aside is still your money; tax paid/withheld is already paid to IRAS for this income year. Exclude payments for earlier income years and do not count the same money twice.</div>
+    </div></div>
+  </div>
+  <div class="section-title"><h3>How the estimate is calculated</h3><small id="personalTaxBasis"></small></div>
+  <div class="card"><div class="breakdown" id="personalTaxBreakdown"></div></div>
+  <p class="small muted" style="line-height:1.6">Planning only, using Singapore resident rates from YA 2024 onwards, checked 6 November 2026. Standard earned-income relief is based on age; other reliefs are entered above. No unannounced rebates or foreign tax credits are assumed. Taxable employment income, benefits and eligible reliefs should match your tax documents.<br><a class="source-link" href="https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-residency-and-tax-rates/individual-income-tax-rates" target="_blank" rel="noopener">IRAS resident rates</a> · <a class="source-link" href="https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/earned-income-relief" target="_blank" rel="noopener">Earned-income relief</a> · <a class="source-link" href="https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/receive-tax-bill-pay-tax-check-refunds/late-payment-or-non-payment-of-individual-income-tax" target="_blank" rel="noopener">Payment deadline</a></p>
+</section>
+
 <section class="page" id="page-compare">
   <div class="page-head"><div><h2>NES vs MOG</h2><p>The original business-case comparison: old employee package versus operating through MOG.</p></div></div>
   <div class="grid grid-3" id="compareCards"></div>
@@ -495,7 +533,7 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
   <div class="page-head"><div><h2>Settings</h2><p>All assumptions are editable. Changes recalculate the entire app immediately.</p></div><button class="btn green" id="saveSettingsBtn">Save settings</button></div>
   <div class="card">
     <div class="settings-group"><h3>Current contract & currency</h3><div class="settings-grid" id="settingsContract"></div></div>
-    <div class="settings-group"><h3>Tax reserve</h3><div class="notice" style="margin-bottom:12px">The monthly dividend tool keeps only the 15% cumulative company-tax reserve. There is no separate operating cash buffer.</div><div class="settings-grid" id="settingsTax"></div></div>
+    <div class="settings-group"><h3>Tax reserve</h3><div class="notice" style="margin-bottom:12px">The monthly dividend tool keeps only the 15% cumulative company-tax reserve. There is no separate operating cash buffer. Your own income-tax plan, tax payments and saved cash are managed in Tax → Personal tax; the comparison relief below applies only to NES vs MOG.</div><div class="settings-grid" id="settingsTax"></div></div>
     <div class="settings-group"><h3>NES comparison</h3><div class="notice" style="margin-bottom:12px">Comparison uses one OPEX assumption only: <b>Forecast monthly non-wage OPEX</b> above (currently US$400/month). Actual work days are calculated from the 26-day baseline less annual leave and public holidays not worked.</div><div class="settings-grid" id="settingsNES"></div></div>
     <div class="settings-group"><h3>Tax references</h3>
       <div class="notice">Individual tax rates: <a class="source-link" target="_blank" href="https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-residency-and-tax-rates/individual-income-tax-rates">IRAS resident individual rates</a><br>
@@ -544,7 +582,7 @@ const EMPTY_STATE={
   personalTaxPaidSGD:0,personalReliefsSGD:0,nesWithholdingRate:0,nesDayRate:0,nesAllowance:0,
   nesLeaveDays:14,nesPublicHolidays:11,nesPublicHolidaysWorked:9,comparisonWorkDaysPerMonth:26,comparisonLeaveTaken:20,comparisonWorkDays:0,comparisonMOGOpexSGD:0
  },
- monthly:[],actuals:[],dividends:[],documents:[],currentBank:null,proposedDividend:0
+ monthly:[],actuals:[],dividends:[],documents:[],personalTax:{years:{}},currentBank:null,proposedDividend:0
 };
 let state=loadState();
 let editingActual=null,editingDividend=null,pendingXlsx=null;
@@ -553,6 +591,8 @@ function clone(x){return JSON.parse(JSON.stringify(x))}
 function ensureStateDefaults(p){
  if(!p||!p.settings)return p;
  if(!Array.isArray(p.monthly))p.monthly=[];if(!Array.isArray(p.actuals))p.actuals=[];if(!Array.isArray(p.dividends))p.dividends=[];if(!Array.isArray(p.documents))p.documents=[];
+ if(!p.personalTax||typeof p.personalTax!=="object"||Array.isArray(p.personalTax))p.personalTax={years:{}};
+ if(!p.personalTax.years||typeof p.personalTax.years!=="object"||Array.isArray(p.personalTax.years))p.personalTax.years={};
  const oldVersion=n(p.version,1);
  const d=EMPTY_STATE.settings;for(const [k,v] of Object.entries(d))if(p.settings[k]===undefined)p.settings[k]=v;
  if(oldVersion<5){
@@ -761,6 +801,75 @@ function saveHomeMonth(){const key=state.settings.controlMonth,r=monthRow(key,tr
 function saveHomeBank(){const old=state.currentBank||{};state.currentBank={...old,snapshotDate:document.getElementById("homeBankDate").value||localISODate(),fx:n(document.getElementById("homeBankFX").value,state.settings.fx),revolutUSD:n(document.getElementById("homeRevolutUSD").value),revolutSGD:n(document.getElementById("homeRevolutSGD").value),sleekUSD:n(document.getElementById("homeSleekUSD").value),sleekSGD:n(document.getElementById("homeSleekSGD").value),currentAR:n(document.getElementById("homeAR").value),currentAP:n(document.getElementById("homeAP").value),currentDueTo:n(document.getElementById("homeDueTo").value)};document.getElementById("homeBankSaveStatus").textContent="Saved";renderAll()}
 function createHomeDividendRequest(){const c=calc(),amount=n(document.getElementById("homeDividendAmount").value),safe=Math.max(0,c.safeAfterPending);if(amount<=0){alert("Enter a dividend request amount.");return}if(amount>safe+.01){alert(`The request exceeds the current safe amount of ${fmtUSD(safe,2)}.`);return}const date=localISODate();state.dividends.push({id:"d"+Date.now(),period:dividendPeriodFromDate(date),requestDate:date,declarationDate:"",cashDate:"",amountUSD:amount,fx:n(state.settings.fx),status:"Requested",documentation:"Pending",reference:"",handling:"Requested; not yet paid",notes:"Created from Monthly Control Centre"});renderAll()}
 
+/* Personal tax is a private, calendar-year plan independent of company accounts. */
+const PERSONAL_TAX_YEAR=2026;
+function defaultPersonalTaxPlan(){
+ const now=localISODate(),year=Number(now.slice(0,4)),month=Number(now.slice(5,7));
+ return {resident:'',age:null,monthlySalarySGD:maybeNum(state.settings.monthlySalarySGD),salaryStart:1,salaryEnd:12,nesUSD:0,nesMonth:1,nesFX:maybeNum(state.settings.fx),nesSGD:null,otherReliefsSGD:0,paidSGD:0,savedSGD:null,asOfMonth:year>PERSONAL_TAX_YEAR?12:year<PERSONAL_TAX_YEAR?0:month-1};
+}
+function personalTaxPlan(){return state.personalTax?.years?.[PERSONAL_TAX_YEAR]||defaultPersonalTaxPlan()}
+function calculatePersonalTax(p){
+ const errors=[],amount=(key,label,optional=false)=>{const v=maybeNum(p[key]);if((v===null&&!optional)||(v!==null&&v<0))errors.push(label);return v};
+ const monthly=amount('monthlySalarySGD','monthly salary'),nesUSD=amount('nesUSD','NES income'),otherReliefs=amount('otherReliefsSGD','other reliefs'),paid=amount('paidSGD','tax paid/withheld'),saved=amount('savedSGD','cash set aside',true);
+ if(p.resident!=='SG')errors.push('Singapore tax residence');
+ const age=maybeNum(p.age),start=maybeNum(p.salaryStart),end=maybeNum(p.salaryEnd),nesMonth=maybeNum(p.nesMonth),asOf=maybeNum(p.asOfMonth);
+ if(age===null||!Number.isInteger(age)||age<0||age>120)errors.push('age');
+ if(!Number.isInteger(start)||!Number.isInteger(end)||start<1||end>12||end<start)errors.push('salary months');
+ if(!Number.isInteger(nesMonth)||nesMonth<1||nesMonth>12)errors.push('NES month');
+ if(!Number.isInteger(asOf)||asOf<0||asOf>12)errors.push('income-through month');
+ const exact=amount('nesSGD','exact NES SGD amount',true),fx=maybeNum(p.nesFX);
+ if(exact===null&&nesUSD>0&&(fx===null||fx<=0))errors.push('NES conversion rate or exact SGD amount');
+ if(errors.length)return {valid:false,errors};
+ const salaryAnnual=monthly*(end-start+1),salaryYTD=monthly*Math.max(0,Math.min(asOf,end)-start+1),nesAnnual=exact!==null?exact:nesUSD>0?nesUSD*fx:0,nesYTD=asOf>=nesMonth?nesAnnual:0;
+ const grossAnnual=salaryAnnual+nesAnnual,grossYTD=salaryYTD+nesYTD,standardRelief=age<55?1000:age<60?6000:8000;
+ const earnedRelief=Math.min(standardRelief,grossAnnual),reliefTotal=Math.min(80000,earnedRelief+otherReliefs),reliefYTD=Math.min(80000,Math.min(standardRelief,grossYTD)+otherReliefs);
+ const chargeableAnnual=Math.max(0,grossAnnual-reliefTotal),chargeableYTD=Math.max(0,grossYTD-reliefYTD),taxAnnual=Math.round(residentTax(chargeableAnnual)*100)/100,taxYTD=Math.round(residentTax(chargeableYTD)*100)/100;
+ const annualUnpaid=Math.max(0,taxAnnual-paid),earnedUnpaid=Math.max(0,taxYTD-paid),cashKnown=saved!==null,nowTopUp=cashKnown?Math.max(0,earnedUnpaid-saved):null,yearEndTopUp=cashKnown?Math.max(0,annualUnpaid-saved):null,monthsLeft=12-asOf;
+ return {valid:true,errors:[],asOf,monthly,salaryAnnual,salaryYTD,nesAnnual,nesYTD,exactNES:exact!==null,fx,grossAnnual,grossYTD,earnedRelief,reliefTotal,reliefsCapped:earnedRelief+otherReliefs>80000,chargeableAnnual,chargeableYTD,taxAnnual,taxYTD,paid,saved,cashKnown,annualUnpaid,earnedUnpaid,nowTopUp,yearEndTopUp,monthsLeft,monthlyTopUp:cashKnown&&monthsLeft>0?Math.ceil(yearEndTopUp*100/monthsLeft-1e-7)/100:null};
+}
+const personalTaxFields={ptResident:'resident',ptAge:'age',ptSalary:'monthlySalarySGD',ptSalaryStart:'salaryStart',ptSalaryEnd:'salaryEnd',ptNesUSD:'nesUSD',ptNesMonth:'nesMonth',ptNesFX:'nesFX',ptNesSGD:'nesSGD',ptReliefs:'otherReliefsSGD',ptPaid:'paidSGD',ptSaved:'savedSGD',ptAsOf:'asOfMonth'};
+function readPersonalTaxForm(){
+ const p={};for(const [id,key] of Object.entries(personalTaxFields)){const value=document.getElementById(id).value;p[key]=key==='resident'?value:maybeNum(value)}return p;
+}
+function personalMonthLabel(month){return month===0?'Start of 2026':fmtMonth(`${PERSONAL_TAX_YEAR}-${String(month).padStart(2,'0')}-01`)}
+function renderPersonalTaxResults(p){
+ const c=calculatePersonalTax(p),results=document.getElementById('personalTaxResults'),breakdown=document.getElementById('personalTaxBreakdown'),basis=document.getElementById('personalTaxBasis'),status=document.getElementById('personalTaxStatus');
+ if(!c.valid){
+  results.innerHTML=[metric('Current tax reserve needed','—','Complete your personal tax plan'),metric('Full-year tax estimate','—','2026 income / YA 2027'),metric('Still to fund by 31 Dec','—','After tax paid and cash already saved'),metric('Monthly top-up to year end','—','Based on the selected month')].join('');
+  breakdown.textContent='Needed: '+c.errors.join(', ')+'.';basis.textContent='';status.textContent='Enter and save your private personal-tax details.';
+  document.getElementById('personalCards').innerHTML=metric('Personal tax plan','—','Open Tax → Personal tax to enter your income and savings.');return;
+ }
+ const through=personalMonthLabel(c.asOf),money=v=>v===null?'—':fmtSGD(v,2);
+ results.innerHTML=[metric('Current tax reserve needed',money(c.earnedUnpaid),`Tax through ${through}, less paid/withheld; compare with cash saved`,c.earnedUnpaid>0?'warn':''),metric('Full-year tax estimate',money(c.taxAnnual),'Tax on all January–December income'),metric('Still to fund by 31 Dec',money(c.yearEndTopUp),'After tax paid/withheld and cash already set aside',c.yearEndTopUp>0?'warn':''),metric(c.monthsLeft?'Monthly top-up to year end':'Year-end top-up remaining',money(c.monthsLeft?c.monthlyTopUp:c.yearEndTopUp),c.monthsLeft?`Spread over ${c.monthsLeft} remaining month${c.monthsLeft===1?'':'s'}; includes any catch-up`:'All 12 income months included')].join('');
+ const rows=[['Salary earned through '+through,c.salaryYTD],['NES income included to date',c.nesYTD],['Total income earned to date',c.grossYTD],['Estimated tax on income earned to date',c.taxYTD],['Additional to save now, after paid and saved',c.nowTopUp],['Full-year salary forecast',c.salaryAnnual],['Additional NES income — SGD',c.nesAnnual],['Total full-year income',c.grossAnnual],['Standard earned-income relief',-c.earnedRelief],['Total annual reliefs used'+(c.reliefsCapped?' (capped)':''),-c.reliefTotal],['Full-year chargeable income',c.chargeableAnnual],['Full-year tax estimate',c.taxAnnual],['Tax already paid / withheld',-c.paid],['Estimated tax still payable',c.annualUnpaid],['Cash already set aside',c.saved===null?null:-c.saved],['Additional savings needed by 31 December',c.yearEndTopUp]];
+ breakdown.innerHTML=rows.map(([label,value])=>`<div class="k">${esc(label)}</div><div class="v">${money(value)}</div>`).join('');
+ basis.textContent=`Income through ${through}`;
+ status.textContent=(c.exactNES?'Using the entered NES SGD figure.':'NES income uses your saved planning FX; replace it with the exact tax-statement SGD amount when known.')+(c.cashKnown?'':' Enter cash already set aside (0 if none) to calculate your savings shortfall.')+(c.reliefsCapped?' Total personal reliefs are capped at S$80,000.':'')+' Click Save personal tax to keep changes and sync them when Drive is connected.';
+ document.getElementById('personalCards').innerHTML=[metric('Personal tax — earned to date',money(c.taxYTD),`Through ${through}`),metric('Full-year personal tax',money(c.taxAnnual),'Calendar 2026 / YA 2027'),metric('Additional to set aside now',money(c.nowTopUp),'After personal tax paid and cash saved'),metric('Still to fund by year end',money(c.yearEndTopUp),'See Tax → Personal tax for the full plan')].join('');
+}
+function renderPersonalTax(){
+ renderCompanyTaxSummary();
+ const months=Array.from({length:12},(_,i)=>`<option value="${i+1}">${esc(personalMonthLabel(i+1))}</option>`).join('');
+ for(const id of ['ptSalaryStart','ptSalaryEnd','ptNesMonth'])document.getElementById(id).innerHTML=months;
+ document.getElementById('ptAsOf').innerHTML='<option value="0">Start of 2026</option>'+months;
+ const p=personalTaxPlan();for(const [id,key] of Object.entries(personalTaxFields))inputVal(id,p[key]);renderPersonalTaxResults(p);
+}
+function savePersonalTax(){
+ const p=readPersonalTaxForm(),c=calculatePersonalTax(p);if(!c.valid){renderPersonalTaxResults(p);return;}
+ state.personalTax=state.personalTax||{years:{}};state.personalTax.years=state.personalTax.years||{};state.personalTax.years[PERSONAL_TAX_YEAR]=p;
+ renderAll();document.getElementById('personalTaxStatus').textContent=c.cashKnown?'Personal tax saved. '+(accessToken?'Syncing privately to Google Drive.':'Connect Google Drive to sync this plan across devices.'):'Income and tax estimate saved. Enter cash already set aside to calculate savings shortfalls.';
+}
+
+function renderCompanyTaxSummary(){
+ const c=calc(),mc=calcMonthlyControl(state.settings.controlMonth||openMonthKey()),cards=document.getElementById('taxCompanyCards'),note=document.getElementById('taxCompanyNote');
+ document.getElementById('taxCompanyPeriod').textContent=state.settings.fyStart&&state.settings.fyEnd?`${fmtDate(state.settings.fyStart)} – ${fmtDate(state.settings.fyEnd)}`:'Company financial year';
+ const reserve=metric('Company cash reserve — 15% rule',fmtUSD(mc.taxReserve,2),'Cash held back for company tax; separate from the liability estimate');
+ if(c.missing){cards.innerHTML=[metric('Estimated company tax','—','Load a Sleek accounts snapshot'),metric('Estimated tax still payable','—','No company snapshot available'),reserve].join('');note.textContent='Company liability needs management accounts. Your personal plan works independently below.';return;}
+ const paidSGD=c.taxPaid*c.fx,outstanding=Math.max(0,c.companyTax-paidSGD),forecastOutstanding=Math.max(0,c.fyTax-paidSGD);
+ cards.innerHTML=[metric('Company tax estimate to date',fmtSGD(c.companyTax,2),`From accounts through ${fmtDate(c.selected)}`),metric('Company tax paid / credited',fmtSGD(paidSGD,2),'Recorded USD payments converted at planning FX'),metric('Estimated company tax still payable',fmtSGD(outstanding,2),'Estimate to date, less recorded company tax payments'),metric('Full company-year tax forecast',fmtSGD(c.fyTax,2),'Existing full-year profit forecast and company tax rules'),metric('Forecast company tax still payable',fmtSGD(forecastOutstanding,2),'Full company-year forecast, less recorded payments'),reserve].join('');
+ note.textContent=`Company estimates use the existing Sleek snapshot and company-tax settings at planning FX ${c.fx} S$/US$. The full-year forecast is an estimate, not an IRAS assessment. The 15% cash reserve is a savings policy, not the tax rate payable. Personal tax below is paid from your personal account and never changes company balances or dividend capacity.`;
+}
+
 function renderAll(){
  const c=calc();
  renderMonthSelect();
@@ -921,7 +1030,7 @@ const settingDefs={
  tax:[
   ["companyTaxReservePct","Company tax pot — % of company profit","percent","0.01"],["currentFYTaxPaidUSD","Current FY company tax paid — USD","number","0.01"],
   ["corpRebatePct","CIT rebate % (leave 0 unless applicable to this YA)","percent","0.01"],["corpRebateCapSGD","CIT rebate cap — S$","number","1"],["suteEligible","Use start-up tax exemption","checkbox"],
-  ["personalTaxPaidSGD","Personal tax already paid / withheld — S$","number","1"],["personalReliefsSGD","Annual personal reliefs/deductions — S$","number","1"]
+  ["personalReliefsSGD","NES vs MOG comparison: annual personal reliefs — S$","number","0.01"]
  ],
  nes:[
   ["nesWithholdingRate","NES historical withholding rate","percent","0.01"],["nesDayRate","NES old day rate — USD","number","0.01"],["nesAllowance","NES monthly allowance — USD","number","0.01"],
@@ -949,7 +1058,7 @@ function renderStorage(){
 }
 
 
-function hasFinanceData(){return !!(state.actuals?.length||state.monthly?.length||state.dividends?.length||state.currentBank);}
+function hasFinanceData(){return !!(state.actuals?.length||state.monthly?.length||state.dividends?.length||state.currentBank||Object.keys(state.personalTax?.years||{}).length);}
 function setCloudPill(text,kind=""){
  const p=document.getElementById("cloudPill");if(!p)return;p.textContent=text;p.className="cloud-pill"+(kind?" "+kind:"");
 }
@@ -1228,7 +1337,7 @@ function renderDashboard(c){
  document.getElementById("reconciliation").innerHTML=`<div class="notice"><b>Monthly forecast:</b> Income and salary belong to the work month, even when they settle early the following month. Only payments not yet included in bank balances adjust forecast cash. Other cash movements are an inferred reconciliation, not verified itemised expenses. The 15% reserve rule is unchanged.</div>`;renderProposal();
 }
 function renderAll(){
- const c=calc();renderMonthSelect();if(!c.missing){renderDashboard(c);renderDividends(c);renderCompare(c)}renderHomeControl();renderMonthly();renderActuals();renderSettings();renderStorage();document.getElementById("monthPill").textContent=fmtMonth((state.settings.controlMonth||openMonthKey())+"-01");saveState();
+ const c=calc();renderMonthSelect();if(!c.missing){renderDashboard(c);renderDividends(c);renderCompare(c)}renderHomeControl();renderMonthly();renderActuals();renderSettings();renderStorage();renderPersonalTax();document.getElementById("monthPill").textContent=fmtMonth((state.settings.controlMonth||openMonthKey())+"-01");saveState();
 }
 function showPage(name){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
@@ -1253,6 +1362,8 @@ document.getElementById("cloudConnectBtn").addEventListener("click",connectGoogl
 document.getElementById("googleSignOutBtn").addEventListener("click",disconnectGoogle);
 document.getElementById("cloudSaveNowBtn").addEventListener("click",manualSaveCloud);
 document.getElementById("cloudReloadBtn").addEventListener("click",manualReloadCloud);
+document.getElementById('personalSaveBtn').addEventListener('click',savePersonalTax);
+for(const id of Object.keys(personalTaxFields))document.getElementById(id).addEventListener('input',()=>renderPersonalTaxResults(readPersonalTaxForm()));
 document.getElementById("dashboardMonth").addEventListener("change",e=>{state.settings.selectedMonthEnd=e.target.value;renderAll()});
 document.getElementById("controlMonth").addEventListener("change",e=>{editingClosedMonthKey="";state.settings.controlMonth=e.target.value;renderAll()});
 document.getElementById("saveHomeMonthBtn").addEventListener("click",saveHomeMonth);
@@ -1406,11 +1517,12 @@ document.getElementById("importBackupInput").addEventListener("change",async e=>
  e.target.value="";
 });
 document.getElementById("exportSummaryBtn").addEventListener("click",()=>{
+ const personalSummary=calculatePersonalTax(personalTaxPlan());
  const c=calc(),a=c.a,rows=[
   ["MOG Finance Summary",fmtDate(c.selected)],["Revenue YTD USD",a.sales],["Profit YTD USD",a.profit],["Cash USD",a.cash],["Accounts Receivable USD",a.ar],
   ["Dividends YTD USD",c.usedDivs],["Estimated Actual Company Tax YTD S$",c.companyTax],["15% Company Tax Pot USD",c.companyTaxReserve],["Minimum Cash Retain USD",c.minCash],
-  ["Safe Additional Dividend USD",c.safe],["Potential After A/R USD",c.afterAR],["Salary YTD S$",c.salYTD],["Personal Tax Accrued YTD S$",c.personalYTD],
-  ["Forecast Annual Personal Tax S$",c.personalForecast],["MOG Advantage vs NES S$",c.advantage]
+  ["Safe Additional Dividend USD",c.safe],["Potential After A/R USD",c.afterAR],["Personal salary YTD S$",personalSummary.valid?personalSummary.salaryYTD:""],["Personal Tax Accrued YTD S$",personalSummary.valid?personalSummary.taxYTD:""],
+  ["Forecast Annual Personal Tax S$",personalSummary.valid?personalSummary.taxAnnual:""],["Personal Tax Still Payable S$",personalSummary.valid?personalSummary.annualUnpaid:""],["Personal Cash Set Aside S$",personalSummary.valid?personalSummary.saved??"":""],["Personal Year-End Savings Shortfall S$",personalSummary.valid?personalSummary.yearEndTopUp??"":""],["MOG Advantage vs NES S$",c.advantage]
  ];
  downloadBlob(rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n"),`MOG_Finance_Summary_${c.selected}.csv`,"text/csv");
 });

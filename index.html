@@ -364,8 +364,6 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
           <div class="field"><label>Calculated work income — US$</label><input id="homeCalculatedIncome" type="text" readonly></div>
           <div class="field extra-income-field"><label>Extra NES reimbursement / payment</label><div class="money-combo"><input id="homeExtraIncome" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"><select id="homeExtraCurrency" aria-label="Additional NES payment currency"><option value="USD">USD</option><option value="SGD">SGD</option></select></div></div>
           <div class="field"><label id="homeSalaryLabel" for="homeSalaryUSD">Salary paid — US$</label><input id="homeSalaryUSD" type="number" inputmode="decimal" min="0" step="0.01"><div id="homeSalaryEstimateNote" class="small muted"></div></div>
-          <div class="field"><label for="homeIncomeReceived">Work income + extra — bank status</label><select id="homeIncomeReceived"><option value="no">Still to arrive</option><option value="yes">Already included in bank balances</option></select></div>
-          <div class="field"><label for="homeSalaryPaid">Salary — bank status</label><select id="homeSalaryPaid"><option value="no">Still to be paid</option><option value="yes">Already deducted from bank balances</option></select></div>
           <div class="field" id="homeForecastFXField"><label for="homeForecastFX">Forecast FX — S$ per US$1</label><input id="homeForecastFX" type="number" inputmode="decimal" min="0.0001" step="0.0001"><div class="small muted">Uses your planning rate; update it for this forecast.</div></div>
           <div class="field" id="homeRemainingExpensesField"><label for="homeRemainingExpenses">Further expenses still to pay — US$</label><input id="homeRemainingExpenses" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"><div class="small muted">Only amounts not yet deducted from the balances below.</div></div>
         </div>
@@ -1268,7 +1266,7 @@ function inputVal(id,v){
  // Preserve in-progress decimal entry (for example "123.") during live recalculation.
  if(el&&document.activeElement!==el)el.value=v??"";
 }
-function setHomeDisabled(disabled){["homeDays","homeExtraIncome","homeExtraCurrency","homeSalaryUSD","homeRevolutUSD","homeRevolutSGD","homeSleekUSD","homeSleekSGD","homeDividendAmount","saveHomeMonthBtn","homeIncomeReceived","homeSalaryPaid","homeForecastFX","homeRemainingExpenses","homeBankDate","homeDividendSnapshot"].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=disabled})}
+function setHomeDisabled(disabled){["homeDays","homeExtraIncome","homeExtraCurrency","homeSalaryUSD","homeRevolutUSD","homeRevolutSGD","homeSleekUSD","homeSleekSGD","homeDividendAmount","saveHomeMonthBtn","homeForecastFX","homeRemainingExpenses","homeBankDate","homeDividendSnapshot"].forEach(id=>{const e=document.getElementById(id);if(e)e.disabled=disabled})}
 function renderHomeControl(){
  const sel=document.getElementById("controlMonth");if(!sel)return;ensureOpenMonth();
  const keys=[...new Set(state.monthly.map(r=>monthKeyFromPeriod(r.period)).filter(Boolean))].sort().reverse(),open=openMonthKey();if(!keys.includes(open))keys.unshift(open);
@@ -1277,11 +1275,11 @@ function renderHomeControl(){
  const r=monthRow(current,true),closed=!!r.closed,editing=closed&&editingClosedMonthKey===current,readonly=closed&&!editing;
  const mc=calcMonthlyControl(current),d=mc.derived,payment=monthPaymentInfo(r),exp=d.expenses,cur=d.currentCash,forecast=payment.hasPending;
  document.getElementById("homeMonthHeading").textContent=fmtMonth(current+"-01")+' work';
- document.getElementById("homeMonthSub").textContent=closed?"Closed monthly position and dividend record. "+monthPaymentTiming(current):monthPaymentTiming(current)+' Select whether each payment is already reflected in your bank balances.';
+ document.getElementById("homeMonthSub").textContent=closed?"Closed monthly position and dividend record. "+monthPaymentTiming(current):monthPaymentTiming(current)+' Forecasts include income and salary as following-month payments.';
  const badge=document.getElementById("homeStatusBadge");badge.textContent=closed?(r.closeCashMode==="after-payments-and-dividend"&&forecast?"CLOSED · FORECAST CASH":"CLOSED"):(forecast?"FORECAST":"OPEN");badge.className="status-pill "+(closed?"":"good");
  inputVal("homeDays",r.days??26);inputVal("homeExtraIncome",r.extraIncomeAmount||"");inputVal("homeExtraCurrency",r.extraIncomeCurrency||"USD");
  inputVal("homeDividendSnapshot",r.dividendsInSnapshot?"yes":"no");document.getElementById("homeDividendSnapshotField").classList.toggle("hidden",!closed||r.closeCashMode!=="after-payments-and-dividend");
- inputVal("homeIncomeReceived",payment.incomeReceived?'yes':'no');inputVal("homeSalaryPaid",payment.salaryPaid?'yes':'no');inputVal("homeForecastFX",payment.fx??'');inputVal("homeRemainingExpenses",r.remainingExpensesUSD??0);inputVal("homeBankDate",r.snapshotDate||localISODate());
+ inputVal("homeForecastFX",payment.fx??'');inputVal("homeRemainingExpenses",r.remainingExpensesUSD??0);inputVal("homeBankDate",r.snapshotDate||localISODate());
  inputVal("homeSalaryUSD",payment.salaryPaid?(r.salaryUSD??''):(payment.salary===null?'':Math.round(payment.salary*100)/100));
  inputVal("homeRevolutUSD",r.revolutUSD??"");inputVal("homeRevolutSGD",r.revolutSGD??"");inputVal("homeSleekUSD",r.sleekUSD??"");inputVal("homeSleekSGD",r.sleekSGD??"");inputVal("homeCalculatedIncome",fmtUSD(workIncomeUSD(r),2));
  document.getElementById("homeSalaryLabel").textContent=payment.salaryPaid?'Salary paid — US$':'Estimated salary — US$';
@@ -1308,17 +1306,17 @@ function renderHomeControl(){
  document.getElementById("homeClosedNote").classList.toggle('hidden',!closed||editing);document.getElementById("homeEditMonthBtn").classList.toggle('hidden',!closed||editing);document.getElementById("homeSaveCorrectionBtn").classList.toggle('hidden',!editing);document.getElementById("homeCreateRequestBtn").classList.toggle('hidden',closed);document.getElementById("saveHomeMonthBtn").classList.toggle('hidden',closed&&!editing);
  document.getElementById("homeEditHint").textContent=editing?'Editing historical month':`${fmtUSD(n(r.rate,state.settings.mogDayRate),2)}/day + ${fmtUSD(n(r.service,state.settings.serviceFee),0)} service`;
  setHomeDisabled(readonly);document.getElementById('homeSalaryUSD').readOnly=!payment.salaryPaid;
- ['homeIncomeReceived','homeSalaryPaid','homeRemainingExpenses','homeForecastFX','homeDividendSnapshot'].forEach(id=>{document.getElementById(id).disabled=readonly});
+ ['homeRemainingExpenses','homeForecastFX','homeDividendSnapshot'].forEach(id=>{document.getElementById(id).disabled=readonly});
  document.getElementById('homeCreateRequestBtn').disabled=!payment.valid||cur===null||!d.ready;
  if(editing){document.getElementById('homeDividendAmount').disabled=true;document.getElementById('saveHomeMonthBtn').classList.add('hidden')}
- document.getElementById('homeMonthStatus').textContent=closed?`Closed ${r.closedDate?fmtDate(r.closedDate):''}`:(!payment.valid?'Enter a valid planning FX and salary budget, or the exact salary paid.':(cur===null?'Enter all four bank balances; use 0 for an empty account.':(exp!==null&&d.cashExpenses<-.01?'Unexplained bank inflow: check payment status, snapshot dates and the Operations adjustment. The dividend estimate needs reconciliation.':(forecast&&!d.ready?'Forecast cash shown; a prior closing bank position is needed for the dividend estimate.':(forecast?'Forecast ready. Declare & close records your entered dividend as paid and carries the forecast closing cash forward.':'Ready to review the dividend proposal.')))));
+ document.getElementById('homeMonthStatus').textContent=closed?`Closed ${r.closedDate?fmtDate(r.closedDate):''}`:(!payment.valid?'Enter a valid planning FX and salary budget, or the exact salary paid.':(cur===null?'Enter all four bank balances; use 0 for an empty account.':(exp!==null&&d.cashExpenses<-.01?'Unexplained bank inflow: check snapshot dates and the Operations adjustment. The dividend estimate needs reconciliation.':(forecast&&!d.ready?'Forecast cash shown; a prior closing bank position is needed for the dividend estimate.':(forecast?'Forecast ready. Declare & close records your entered dividend as paid and carries the forecast closing cash forward.':'Ready to review the dividend proposal.')))));
 }
 function captureHomeMonth(){
  const key=state.settings.controlMonth,r=monthRow(key,true);
  r.days=Math.max(0,n(document.getElementById('homeDays').value));r.rate=n(r.rate,state.settings.mogDayRate);r.service=n(r.service,state.settings.serviceFee);
  r.extraIncomeAmount=Math.max(0,n(document.getElementById('homeExtraIncome').value));r.extraIncomeCurrency=document.getElementById('homeExtraCurrency').value||'USD';
  r.salarySGD=n(state.settings.monthlySalarySGD);r.forecastFX=maybeNum(document.getElementById('homeForecastFX').value);r.remainingExpensesUSD=Math.max(0,n(document.getElementById('homeRemainingExpenses').value));
- if(!r.closed||editingClosedMonthKey===key){r.incomeReceived=document.getElementById('homeIncomeReceived').value==='yes';r.salaryPaid=document.getElementById('homeSalaryPaid').value==='yes'}
+ if(!r.closed){const payment=monthPaymentInfo(r);if(typeof r.incomeReceived!=='boolean')r.incomeReceived=payment.incomeReceived;if(typeof r.salaryPaid!=='boolean')r.salaryPaid=payment.salaryPaid}
  if(r.closeCashMode==='after-payments-and-dividend')r.dividendsInSnapshot=document.getElementById('homeDividendSnapshot').value==='yes';
  if(r.salaryPaid!==false)r.salaryUSD=maybeNum(document.getElementById('homeSalaryUSD').value);
  r.snapshotDate=document.getElementById('homeBankDate').value||localISODate();r.bankFX=rowFx(r);
@@ -1404,15 +1402,10 @@ document.getElementById("homeEditMonthBtn").addEventListener("click",()=>{const 
 document.getElementById("homeSaveCorrectionBtn").addEventListener("click",saveClosedMonthCorrection);
 ["homeDays","homeExtraIncome","homeExtraCurrency","homeSalaryUSD","homeRevolutUSD","homeRevolutSGD","homeSleekUSD","homeSleekSGD","homeForecastFX","homeRemainingExpenses","homeBankDate"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{if(!monthRow(state.settings.controlMonth,false)?.closed||editingClosedMonthKey===state.settings.controlMonth){captureHomeMonth();renderHomeControl()}}));
 
-['homeIncomeReceived','homeSalaryPaid','homeDividendSnapshot'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{
+document.getElementById('homeDividendSnapshot').addEventListener('change',()=>{
  const r=monthRow(state.settings.controlMonth,false);if(!r||r.closed&&editingClosedMonthKey!==state.settings.controlMonth)return;
- if(id==='homeSalaryPaid'&&document.getElementById(id).value==='yes'){
-  // Carry the displayed estimate into the editable paid field, for exact confirmation.
-  r.salaryUSD=maybeNum(document.getElementById('homeSalaryUSD').value);
- }
  captureHomeMonth();renderHomeControl();
-}));
-
+});
 document.getElementById("homeDocumentList").addEventListener("click",e=>{if(e.target.dataset.docopen)openArchivedDocument(e.target.dataset.docopen).catch(err=>alert("Could not open document: "+err.message))});
 document.getElementById("homeBankStatementInput").addEventListener("change",async e=>{const files=[...e.target.files];e.target.value="";if(!files.length)return;if(!accessToken){alert("Connect Google Drive first, then select the statement again.");connectGoogle();return}try{for(const f of files)await archiveMonthlyDocument(f,"bank",state.settings.controlMonth)}catch(err){alert("Could not archive bank statement: "+err.message)}});
 document.getElementById("homeManagementInput").addEventListener("change",async e=>{const file=e.target.files[0];e.target.value="";if(!file)return;if(!accessToken){alert("Connect Google Drive first, then select the management accounts again.");connectGoogle();return}try{await archiveMonthlyDocument(file,"management",state.settings.controlMonth);if(file.name.toLowerCase().endsWith(".xlsx"))await prepareSleekImport(file)}catch(err){alert("Could not process management accounts: "+err.message)}});

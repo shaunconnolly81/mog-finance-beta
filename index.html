@@ -311,6 +311,7 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
 @media(max-width:760px){.personal-form{grid-template-columns:1fr}}
 .tax-editor{margin-top:18px;border:1px solid var(--border);border-radius:12px;padding:14px 16px;background:#fff}
 .tax-editor>summary{cursor:pointer;font-weight:650;color:var(--text)}
+.tax-stat .tax-usd{font-size:16px;color:var(--muted);margin-top:5px}
 .tax-stat .tax-rate{font-size:21px;font-weight:750;color:var(--blue);margin-top:9px}
 .tax-stat .tax-base{font-size:12px;color:var(--muted);margin-top:4px}
 #page-tax .section-title{gap:12px;flex-wrap:wrap}
@@ -499,7 +500,7 @@ input[readonly]{background:#f5f7f8;color:#475a6a}.field input:disabled,.money-co
   <p class="small muted" id="taxCompanyNote"></p>
   <div class="section-title"><h3>Personal tax</h3><small id="personalTaxBasis"></small></div>
   <div class="grid grid-2" id="personalTaxResults" aria-live="polite"></div>
-  <p class="small muted">Personal tax is paid from your personal account. Percentages show total tax as a share of income or profit, before payments.</p>
+  <p class="small muted">Personal tax is paid from your personal account. Percentages show total tax as a share of income or profit, before payments. <span id="taxUSDNote"></span></p>
   <details class="tax-editor"><summary>Tax paid</summary>
     <div class="form-grid personal-form" style="margin-top:16px">
       <div class="field"><label for="taxCompanyPaidUSD">Company tax paid this financial year — US$</label><input id="taxCompanyPaidUSD" type="number" inputmode="decimal" min="0" step="0.01"></div>
@@ -846,8 +847,9 @@ function readPersonalTaxForm(){
 }
 function personalMonthLabel(month){return month===0?'Start of 2026':fmtMonth(`${PERSONAL_TAX_YEAR}-${String(month).padStart(2,'0')}-01`)}
 function taxSummaryCard(label,payable,tax,gross,kind){
+ const fx=maybeNum(state.settings.fx),usd=payable!==null&&fx!==null&&fx>0?`<div class="tax-usd">≈ ${fmtUSD(payable/fx,2)}</div>`:'';
  const amount=payable===null?'—':fmtSGD(payable,2),valid=gross!==null&&gross>0&&tax!==null,rate=valid?fmtPct(tax/gross,2):'—';
- return `<div class="card metric tax-stat"><div class="label">${esc(label)}</div><div class="value">${amount}</div><div class="tax-rate">${rate}</div><div class="tax-base">${valid?`of ${fmtSGD(gross,0)} ${esc(kind)}`:`Effective tax rate · ${esc(kind)} needed`}</div></div>`;
+ return `<div class="card metric tax-stat"><div class="label">${esc(label)}</div><div class="value">${amount}</div>${usd}<div class="tax-rate">${rate}</div><div class="tax-base">${valid?`of ${fmtSGD(gross,0)} ${esc(kind)}`:`Effective tax rate · ${esc(kind)} needed`}</div></div>`;
 }
 function renderPersonalTaxResults(p){
  const c=calculatePersonalTax(p),results=document.getElementById('personalTaxResults'),breakdown=document.getElementById('personalTaxBreakdown'),basis=document.getElementById('personalTaxBasis'),status=document.getElementById('personalTaxStatus');
@@ -866,6 +868,7 @@ function renderPersonalTaxResults(p){
 }
 function renderPersonalTax(){
  renderCompanyTaxSummary();
+ const fx=maybeNum(state.settings.fx);document.getElementById('taxUSDNote').textContent=fx!==null&&fx>0?`USD equivalents use planning FX S$${fx} per US$1.`:'A valid planning FX is needed for USD equivalents.';
  const months=Array.from({length:12},(_,i)=>`<option value="${i+1}">${esc(personalMonthLabel(i+1))}</option>`).join('');
  for(const id of ['ptSalaryStart','ptSalaryEnd','ptNesMonth'])document.getElementById(id).innerHTML=months;
  document.getElementById('ptAsOf').innerHTML='<option value="0">Start of 2026</option>'+months;
